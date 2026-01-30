@@ -1,0 +1,28 @@
+<Project>
+  <!--
+    Central package version management for .NET projects
+    This is a placeholder for the future .NET implementation
+  -->
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Microsoft Agent Framework -->
+    <!-- <PackageVersion Include="Microsoft.Agents.AI" Version="1.0.0" /> -->
+
+    <!-- Neo4j -->
+    <!-- <PackageVersion Include="Neo4j.Driver" Version="5.0.0" /> -->
+
+    <!-- Azure -->
+    <!-- <PackageVersion Include="Azure.AI.OpenAI" Version="2.0.0" /> -->
+    <!-- <PackageVersion Include="Azure.Identity" Version="1.12.0" /> -->
+
+    <!-- Testing -->
+    <!-- <PackageVersion Include="xunit" Version="2.8.0" /> -->
+    <!-- <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" /> -->
+    <!-- <PackageVersion Include="Moq" Version="4.20.0" /> -->
+  </ItemGroup>
+
+</Project>

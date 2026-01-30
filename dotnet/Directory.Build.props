@@ -1,0 +1,30 @@
+<Project>
+  <!--
+    Central MSBuild properties for .NET projects
+    This is a placeholder for the future .NET implementation
+  -->
+
+  <PropertyGroup>
+    <!-- Target frameworks -->
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Code quality -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Package metadata -->
+    <Authors>Microsoft;Neo4j</Authors>
+    <Company>Microsoft</Company>
+    <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://aka.ms/agent-framework</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/neo4j-partners/neo4j-maf-provider</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <!-- Disable packaging by default -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+</Project>
