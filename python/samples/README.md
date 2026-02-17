@@ -82,11 +82,11 @@ AZURE_AI_EMBEDDING_NAME=text-embedding-ada-002
 
 Add your Neo4j database credentials to `.env`:
 
-### Financial Documents Database (samples 1-5)
+### Financial Documents Database (samples 1-4)
 
 See [SETUP.md](SETUP.md) for instructions on setting up the Neo4j database with financial data.
 
-### Aircraft Database (samples 6-8)
+### Aircraft Database (samples 5-7)
 
 For aircraft database access, please contact the author.
 
@@ -101,41 +101,19 @@ uv run start-samples
 ### Run Specific Sample
 
 ```bash
-uv run start-samples 1   # Azure Thread Memory
-uv run start-samples 2   # Semantic Search
-uv run start-samples 3   # Context Provider (Fulltext)
-uv run start-samples 4   # Context Provider (Vector)
-uv run start-samples 5   # Context Provider (Graph-Enriched)
-uv run start-samples 6   # Aircraft Maintenance Search
-uv run start-samples 7   # Flight Delay Analysis
-uv run start-samples 8   # Component Health Analysis
-uv run start-samples 9   # Neo4j Memory Provider
+uv run start-samples 1   # Semantic Search
+uv run start-samples 2   # Context Provider (Fulltext)
+uv run start-samples 3   # Context Provider (Vector)
+uv run start-samples 4   # Context Provider (Graph-Enriched)
+uv run start-samples 5   # Aircraft Maintenance Search
+uv run start-samples 6   # Flight Delay Analysis
+uv run start-samples 7   # Component Health Analysis
 uv run start-samples a   # Run all demos
 ```
 
 ## Available Samples
 
-### Sample 1: Azure Thread Memory (`basic_fulltext/azure_thread_memory.py`)
-
-Demonstrates Azure's built-in conversation memory within a single thread. This sample does **not** use Neo4j—it shows how the Microsoft Agent Framework maintains context across conversation turns using Azure-managed threads.
-
-**What it shows:**
-- Creating an agent with Azure AI Foundry
-- Using threads to maintain conversation state
-- Multi-turn conversations where the agent recalls previous messages
-
-**Example flow:**
-```
-[Turn 1] User: Hello! My name is Wayne and I love horses.
-[Turn 2] User: What is my name and what do I enjoy?
-         Agent: Your name is Wayne and you enjoy horses!
-[Turn 3] User: Can you suggest recommendations for my passion?
-         Agent: Here are some horse-related recommendations...
-```
-
----
-
-### Sample 2: Semantic Search (`vector_search/semantic_search.py`)
+### Sample 1: Semantic Search (`vector_search/semantic_search.py`)
 
 Direct semantic search demonstration without an agent. Shows the raw search capabilities of the `Neo4jContextProvider` with vector embeddings and graph enrichment.
 
@@ -153,7 +131,7 @@ Chunk -[:FROM_DOCUMENT]-> Document <-[:FILED]- Company -[:FACES_RISK]-> RiskFact
 
 ---
 
-### Sample 3: Context Provider - Fulltext (`basic_fulltext/main.py`)
+### Sample 2: Context Provider - Fulltext (`basic_fulltext/main.py`)
 
 Basic fulltext search context provider integrated with a ChatAgent. Uses Neo4j's fulltext index to find relevant document chunks based on keyword matching.
 
@@ -175,7 +153,7 @@ provider = Neo4jContextProvider(
 
 ---
 
-### Sample 4: Context Provider - Vector (`vector_search/main.py`)
+### Sample 3: Context Provider - Vector (`vector_search/main.py`)
 
 Vector similarity search context provider with a ChatAgent. Uses Azure AI embeddings to find semantically similar content even when exact keywords don't match.
 
@@ -198,7 +176,7 @@ provider = Neo4jContextProvider(
 
 ---
 
-### Sample 5: Context Provider - Graph-Enriched (`graph_enriched/main.py`)
+### Sample 4: Context Provider - Graph-Enriched (`graph_enriched/main.py`)
 
 Vector search combined with graph traversal for rich context. After finding relevant chunks, a custom Cypher query traverses relationships to gather company names, tickers, products, and risk factors.
 
@@ -220,7 +198,7 @@ Company -[:MENTIONS]-> Product
 
 ---
 
-### Sample 6: Aircraft Maintenance Search (`aircraft_domain/maintenance_search.py`)
+### Sample 5: Aircraft Maintenance Search (`aircraft_domain/maintenance_search.py`)
 
 Fulltext search on aircraft maintenance events with graph enrichment. Searches fault descriptions and corrective actions, then traverses the graph to provide aircraft, system, and component context.
 
@@ -240,7 +218,7 @@ MaintenanceEvent <-[:HAS_EVENT]- Component <-[:HAS_COMPONENT]- System <-[:HAS_SY
 
 ---
 
-### Sample 7: Flight Delay Analysis (`aircraft_domain/flight_delays.py`)
+### Sample 6: Flight Delay Analysis (`aircraft_domain/flight_delays.py`)
 
 Fulltext search on flight delays with route and aircraft context. Searches delay causes and enriches results with flight numbers, aircraft tail numbers, and origin/destination routes.
 
@@ -262,7 +240,7 @@ Flight -[:ARRIVES_AT]-> Destination Airport
 
 ---
 
-### Sample 8: Component Health Analysis (`aircraft_domain/component_health.py`)
+### Sample 7: Component Health Analysis (`aircraft_domain/component_health.py`)
 
 Fulltext search on aircraft components with maintenance history. Searches component names and types, then aggregates maintenance event counts and severity levels.
 
@@ -281,56 +259,6 @@ Component -[:HAS_EVENT]-> MaintenanceEvent
 
 **Example queries:** "What turbine components have maintenance issues?", "Tell me about fuel pump components"
 
----
-
-### Sample 9: Neo4j Memory Provider (`memory_basic/main.py`)
-
-Persistent agent memory using Neo4j as the storage backend. Memories are stored as nodes with vector embeddings, enabling semantic retrieval across conversation sessions.
-
-**What it shows:**
-- Memory storage after each model invocation (auto-triggered by `invoked()`)
-- Cross-conversation memory retrieval (new thread, same user)
-- User-scoped memory isolation (user A cannot see user B's memories)
-- Semantic search finds related memories even with different phrasing
-
-**Memory flow:**
-1. User shares facts in conversation 1 → stored as Memory nodes
-2. User starts conversation 2 (different thread) → agent recalls facts
-3. Different user asks same questions → no memories found (isolation)
-
-**Configuration:**
-```python
-provider = Neo4jContextProvider(
-    memory_enabled=True,
-    user_id="user_alice",
-    embedder=embedder,
-    ...
-)
-```
-
-**Example output:**
-```
-Part 1: Alice shares facts
-  "I have a golden retriever named Max who loves to play fetch."
-  → Stored as Memory node with vector embedding
-
-Part 2: New conversation, same user
-  [Query] What's my dog's name?
-    Agent: Your dog's name is Max. He's a golden retriever!
-
-Part 3: Semantic search demonstration
-  [Query] Do I have any pets?
-    Note: Different words, but semantically finds "golden retriever named Max"
-    Agent: Yes, you have a golden retriever named Max.
-
-Part 4: User isolation
-  [Bob asks] What's my dog's name?
-    Agent: I don't have any information about your pets.
-    [PASS] Bob cannot see Alice's memories
-```
-
-**Best for:** Building agents that remember users across sessions—personal assistants, customer support, tutoring systems.
-
 ## Directory Structure
 
 ```
@@ -345,7 +273,6 @@ samples/
 │   ├── vector_search/      # Vector similarity samples
 │   ├── graph_enriched/     # Graph traversal samples
 │   ├── aircraft_domain/    # Aircraft maintenance samples
-│   ├── memory_basic/       # Neo4j memory provider sample
 │   └── shared/             # Shared utilities (agent config, CLI, logging)
 ```
 
@@ -375,6 +302,6 @@ With serverless models, you only pay for what you use:
 
 - **Chat model (GPT-4o)**: ~$0.01-0.03 per 1K tokens
 - **Embedding model**: ~$0.0001 per 1K tokens
-- **Running all 9 demos**: approximately $0.10-0.30 total
+- **Running all 8 demos**: approximately $0.10-0.30 total
 
 No idle costs - the AI Services account itself has no ongoing charges when not in use.

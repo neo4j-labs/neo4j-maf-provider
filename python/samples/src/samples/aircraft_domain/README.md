@@ -9,7 +9,7 @@ Domain-specific samples using an aircraft maintenance knowledge graph. Demonstra
 Search maintenance events and enrich with aircraft, system, and component context.
 
 ```bash
-uv run start-samples 6
+uv run start-samples 5
 ```
 
 **Graph Pattern:**
@@ -24,7 +24,7 @@ MaintenanceEvent <- Component <- System <- Aircraft
 Analyze flight delays with route and aircraft information.
 
 ```bash
-uv run start-samples 7
+uv run start-samples 6
 ```
 
 **Graph Pattern:**
@@ -39,7 +39,7 @@ Delay <- Flight -> Aircraft, Origin Airport, Destination Airport
 Component health analysis with maintenance event counts and system hierarchy.
 
 ```bash
-uv run start-samples 8
+uv run start-samples 7
 ```
 
 **Graph Pattern:**

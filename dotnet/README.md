@@ -14,7 +14,6 @@ The .NET implementation will provide the same capabilities as the Python version
 | **Fulltext Search** | Keyword matching using BM25 scoring |
 | **Hybrid Search** | Combined vector + fulltext for best results |
 | **Graph Enrichment** | Traverse relationships after initial search |
-| **Memory Storage** | Persistent conversation memory in Neo4j |
 
 ## Planned Package
 

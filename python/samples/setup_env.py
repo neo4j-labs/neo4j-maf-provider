@@ -41,7 +41,7 @@ PLACEHOLDER_SECTIONS = {
         ]
     },
     'neo4j_aircraft': {
-        'header': '# Neo4j Aircraft Database (samples 6-8)',
+        'header': '# Neo4j Aircraft Database (samples 5-7)',
         'vars': [
             ('AIRCRAFT_NEO4J_URI', 'neo4j+s://xxx.databases.neo4j.io'),
             ('AIRCRAFT_NEO4J_USERNAME', 'neo4j'),

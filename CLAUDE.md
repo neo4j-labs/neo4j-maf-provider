@@ -62,7 +62,7 @@ uv run setup_env.py            # Pull env vars from azd into .env
 ```bash
 cd python
 uv run start-samples           # Interactive menu
-uv run start-samples 3         # Run specific demo (1-8)
+uv run start-samples 3         # Run specific demo (1-7)
 uv run start-samples a         # Run all demos
 ```
 
@@ -90,7 +90,6 @@ uv publish --package agent-framework-neo4j  # Publish to PyPI
 |-----------|----------|---------|
 | `Neo4jContextProvider` | `python/packages/.../agent_framework_neo4j/_provider.py` | Main context provider implementing `ContextProvider` interface |
 | `ProviderConfig` | `python/packages/.../agent_framework_neo4j/_config.py` | Pydantic configuration validation |
-| `MemoryManager` | `python/packages/.../agent_framework_neo4j/_memory.py` | Memory storage and retrieval operations |
 | `Neo4jSettings` | `python/packages/.../agent_framework_neo4j/_settings.py` | Pydantic settings for Neo4j credentials |
 | `AzureAISettings` | `python/packages/.../agent_framework_neo4j/_settings.py` | Pydantic settings for Azure AI |
 | `AzureAIEmbedder` | `python/packages/.../agent_framework_neo4j/_embedder.py` | Azure AI embedding integration |
@@ -106,14 +105,13 @@ uv publish --package agent-framework-neo4j  # Publish to PyPI
    - **fulltext**: Optional stop word filtering → `db.index.fulltext.queryNodes()`
    - **hybrid**: Both vector and fulltext search, combined scores
 5. If `retrieval_query` provided: Execute custom Cypher for graph traversal
-6. If `memory_enabled`: Search Memory nodes for relevant past conversations
-7. Format results → Return `Context(messages=[...])`
+6. Format results → Return `Context(messages=[...])`
 
 ### Samples
 
 Two databases are used in demos:
-- **Financial Documents** (samples 1-5): SEC filings with Company, Document, Chunk, RiskFactor, Product nodes
-- **Aircraft Domain** (samples 6-8): Maintenance events, components, flights, delays
+- **Financial Documents** (samples 1-4): SEC filings with Company, Document, Chunk, RiskFactor, Product nodes
+- **Aircraft Domain** (samples 5-7): Maintenance events, components, flights, delays
 
 ## Environment Variables
 

@@ -41,8 +41,6 @@ sequenceDiagram
     participant LLM as AI Model
 
     User->>Agent: Send message
-    Agent->>Provider: thread_created(thread_id)
-    Note over Provider: Initialize state
 
     loop Each invocation
         Agent->>Provider: invoking(messages)
@@ -50,8 +48,6 @@ sequenceDiagram
         Note over Agent: Merge context with request
         Agent->>LLM: Enhanced request
         LLM-->>Agent: Response
-        Agent->>Provider: invoked(request, response)
-        Note over Provider: Update memory/state
     end
 
     Agent-->>User: Final response
@@ -62,8 +58,6 @@ sequenceDiagram
 | Method | When Called | What It Does |
 |--------|-------------|--------------|
 | `invoking()` | Before each LLM call | Retrieves and returns context to enhance the request |
-| `invoked()` | After each LLM response | Stores information or updates state based on the conversation |
-| `thread_created()` | When a new conversation starts | Initializes thread-specific state |
 
 ### What Context Providers Return
 
@@ -311,47 +305,13 @@ The implementation is spread across a few files, each with a specific responsibi
 - `HybridRetriever`, `HybridCypherRetriever` — Combined vector + fulltext search
 - `Embedder` protocol — Interface that `AzureAIEmbedder` implements
 
-### What Happens After the Response
-
-The provider also has an `invoked()` method that's called after the AI model responds. Currently, this method doesn't do anything, but it's designed for future features like:
-
-- Storing conversation history in Neo4j for long-term memory
-- Updating knowledge based on new information in conversations
-- Tracking which context was most useful for analytics
-
-This matches the pattern used by the Redis provider, which stores conversation messages for future retrieval.
-
 ---
 
 ## Sample Walkthroughs
 
-The `src/samples/` directory contains eight working examples demonstrating different capabilities. Each sample is a standalone async function that creates an agent with the Neo4j context provider. This section shows actual output from running each sample.
+The `src/samples/` directory contains seven working examples demonstrating different capabilities. Each sample is a standalone async function that creates an agent with the Neo4j context provider. This section shows actual output from running each sample.
 
-### Sample 1: Azure Thread Memory (No Neo4j)
-
-**File**: `azure_thread_memory.py`
-
-**What it demonstrates**: How the Microsoft Agent Framework maintains conversation context using Azure-managed threads. **Note**: This sample does NOT use Neo4j—it demonstrates the framework's built-in memory, not the Neo4j provider.
-
-**Sample output**:
-```
-[Turn 1] User: Hello! My name is Wayne and I love horses.
-[Turn 1] Agent: Hi Wayne! That's great to hear. Horses are amazing animals.
-
-[Turn 2] User: What is my name and what do I enjoy?
-[Turn 2] Agent: Your name is Wayne, and you enjoy horses.
-
-[Turn 3] User: Can you suggest recommendations for my passion?
-[Turn 3] Agent: Here are some recommendations for your passion for horses:
-1. Riding Lessons
-2. Equestrian Events
-3. Volunteering at a stable
-...
-```
-
----
-
-### Sample 2: Semantic Search
+### Sample 1: Semantic Search
 
 **File**: `semantic_search.py`
 
@@ -378,7 +338,7 @@ The `src/samples/` directory contains eight working examples demonstrating diffe
 
 ---
 
-### Sample 3: Basic Fulltext Search
+### Sample 2: Basic Fulltext Search
 
 **File**: `context_provider_basic.py`
 
@@ -437,7 +397,7 @@ Agent: Technology companies face several risk factors, including:
 
 ---
 
-### Sample 4: Vector Search with Microsoft Foundry Embeddings
+### Sample 3: Vector Search with Microsoft Foundry Embeddings
 
 **File**: `context_provider_vector.py`
 
@@ -485,7 +445,7 @@ Agent: The technology sector faces several challenges and risks:
 
 ---
 
-### Sample 5: Graph-Enriched Mode
+### Sample 4: Graph-Enriched Mode
 
 **File**: `context_provider_graph_enriched.py`
 
@@ -564,7 +524,7 @@ Notice how the agent knows both the products AND the risks—information that ca
 
 ---
 
-### Sample 6: Aircraft Maintenance Search
+### Sample 5: Aircraft Maintenance Search
 
 **File**: `aircraft_maintenance_search.py`
 
@@ -629,7 +589,7 @@ Agent: Electrical faults occurred across different aircraft:
 
 ---
 
-### Sample 7: Flight Delays Analysis
+### Sample 6: Flight Delays Analysis
 
 **File**: `aircraft_flight_delays.py`
 
@@ -673,7 +633,7 @@ These patterns suggest recurring security challenges at specific airports.
 
 ---
 
-### Sample 8: Component Health Analysis
+### Sample 7: Component Health Analysis
 
 **File**: `component_health.py`
 
@@ -838,14 +798,6 @@ provider = Neo4jContextProvider(
 ---
 
 ## Future Work
-
-### Neo4j-Backed Conversation Memory
-
-The provider's `invoked()` method is currently a stub. A future enhancement could store conversation history in Neo4j for long-term memory, enabling:
-
-- Persistent conversation memory across sessions
-- Memory retrieval based on semantic similarity to current conversation
-- Knowledge graph updates based on new information in conversations
 
 ### Additional Retrievers
 

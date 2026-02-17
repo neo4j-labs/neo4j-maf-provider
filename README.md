@@ -32,7 +32,6 @@ AI model responds with knowledge from your data
 |------|-------------|
 | **Basic** | Returns search results directly |
 | **Graph-Enriched** | Traverses relationships after search for rich context |
-| **Memory** | Stores and retrieves conversation history for persistent agent memory |
 
 ## Language Support
 
@@ -81,7 +80,6 @@ The Python implementation includes demo applications:
 |----------|---------|
 | **Financial Documents** | Basic fulltext, vector search, graph-enriched |
 | **Aircraft Domain** | Maintenance search, flight delays, component health |
-| **Memory** | Persistent agent memory with semantic retrieval |
 
 ```bash
 cd python

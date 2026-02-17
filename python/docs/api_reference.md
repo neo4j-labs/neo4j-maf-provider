@@ -51,29 +51,6 @@ provider = Neo4jContextProvider(
 | `message_history_count` | `int` | Recent messages to use for query. Default: `10`. |
 | `filter_stop_words` | `bool \| None` | Filter stop words from fulltext queries. Default: `True` for fulltext, `False` otherwise. |
 
-### Memory Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `memory_enabled` | `bool` | Enable storing/retrieving conversation memories. Default: `False`. |
-| `memory_label` | `str` | Node label for stored memories. Default: `"Memory"`. |
-| `memory_roles` | `tuple[str, ...]` | Message roles to store. Default: `("user", "assistant")`. |
-| `overwrite_memory_index` | `bool` | Recreate memory indexes if they exist. Default: `False`. |
-| `memory_vector_index_name` | `str` | Name of vector index for memories. Default: `"memory_embeddings"`. |
-| `memory_fulltext_index_name` | `str` | Name of fulltext index for memories. Default: `"memory_fulltext"`. |
-
-### Scoping Parameters (for Memory)
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `application_id` | `str \| None` | Scope memories to a specific application. |
-| `agent_id` | `str \| None` | Scope memories to a specific agent. |
-| `user_id` | `str \| None` | Scope memories to a specific user. |
-| `thread_id` | `str \| None` | Scope memories to a specific conversation thread. |
-| `scope_to_per_operation_thread_id` | `bool` | Use per-operation thread ID from `thread_created()`. Default: `False`. |
-
-**Note:** When `memory_enabled=True`, at least one scoping parameter must be provided.
-
 ## Neo4jSettings
 
 Pydantic settings for Neo4j connection configuration.

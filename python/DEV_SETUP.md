@@ -103,7 +103,7 @@ ls dist/
 # Interactive menu
 uv run start-samples
 
-# Run specific sample (1-8)
+# Run specific sample (1-7)
 uv run start-samples 3
 
 # Run all samples

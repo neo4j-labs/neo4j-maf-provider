@@ -9,21 +9,13 @@ Demonstrates fulltext search with Neo4j using the Lucene query syntax.
 Basic fulltext search context provider that passes user queries directly to Neo4j's fulltext index.
 
 ```bash
-uv run start-samples 3
+uv run start-samples 2
 ```
 
 **Features:**
 - Fulltext search using Lucene syntax
 - Automatic stop word filtering
 - Message history windowing
-
-### azure_thread_memory.py - Azure Thread Memory
-
-Demonstrates Azure Agent Framework thread memory without Neo4j. Useful for testing agent configuration independently.
-
-```bash
-uv run start-samples 1
-```
 
 ## Required Environment Variables
 

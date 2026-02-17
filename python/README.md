@@ -52,7 +52,6 @@ async with provider:
 |------|-------------|
 | **Basic** | Returns search results directly |
 | **Graph-Enriched** | Traverses relationships after search for rich context |
-| **Memory** | Stores and retrieves conversation history for persistent agent memory |
 
 ## Running the Samples
 
@@ -105,12 +104,6 @@ See [samples/README.md](samples/README.md) for detailed setup instructions.
 | **Flight Delays** | Search delay records with route information |
 | **Component Health** | Search components with system hierarchy |
 
-### Memory Provider
-
-| Sample | Description |
-|--------|-------------|
-| **Neo4j Memory** | Persistent agent memory with semantic retrieval |
-
 ## Development
 
 See [DEV_SETUP.md](DEV_SETUP.md) for development environment setup.
@@ -135,7 +128,6 @@ uv build --package agent-framework-neo4j
 
 - [API Reference](docs/api_reference.md) - Public API documentation
 - [Publishing Guide](docs/PUBLISH.md) - Build and publish to PyPI
-- [Memory Examples](docs/MEM_EXAMPLE.md) - Memory system usage examples
 
 ## Public API
 

@@ -120,9 +120,6 @@ Run the pytest test suite with coverage reporting:
   - Settings validation tests (environment loading, defaults)
   - Provider initialization tests (required parameters, defaults, validation)
   - Graph enrichment configuration tests
-  - Memory configuration and scoping tests
-  - Thread ID handling tests
-  - ScopeFilter and MemoryManager unit tests
 
 ### Type Checking
 

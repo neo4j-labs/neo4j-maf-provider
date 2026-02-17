@@ -24,23 +24,19 @@ def _get_demos() -> dict[str, DemoFunc]:
     from samples.aircraft_domain.component_health import demo_component_health
     from samples.aircraft_domain.flight_delays import demo_aircraft_flight_delays
     from samples.aircraft_domain.maintenance_search import demo_aircraft_maintenance_search
-    from samples.basic_fulltext.azure_thread_memory import demo_azure_thread_memory
     from samples.basic_fulltext.main import demo_context_provider_basic
     from samples.graph_enriched.main import demo_context_provider_graph_enriched
-    from samples.memory_basic.main import demo_memory_basic
     from samples.vector_search.main import demo_context_provider_vector
     from samples.vector_search.semantic_search import demo_semantic_search
 
     return {
-        "1": demo_azure_thread_memory,
-        "2": demo_semantic_search,
-        "3": demo_context_provider_basic,
-        "4": demo_context_provider_vector,
-        "5": demo_context_provider_graph_enriched,
-        "6": demo_aircraft_maintenance_search,
-        "7": demo_aircraft_flight_delays,
-        "8": demo_component_health,
-        "9": demo_memory_basic,
+        "1": demo_semantic_search,
+        "2": demo_context_provider_basic,
+        "3": demo_context_provider_vector,
+        "4": demo_context_provider_graph_enriched,
+        "5": demo_aircraft_maintenance_search,
+        "6": demo_aircraft_flight_delays,
+        "7": demo_component_health,
     }
 
 
@@ -48,32 +44,26 @@ def print_menu() -> str | None:
     """Display menu and get user selection."""
     print_header("Neo4j MAF Provider Demo")
     print("Select a demo to run:\n")
-    print("  -- Azure Agent Framework --")
-    print("  1. Azure Thread Memory (no Neo4j)")
-    print("")
     print("  -- Financial Documents Database --")
-    print("  2. Semantic Search")
-    print("  3. Context Provider (Fulltext)")
-    print("  4. Context Provider (Vector)")
-    print("  5. Context Provider (Graph-Enriched)")
+    print("  1. Semantic Search")
+    print("  2. Context Provider (Fulltext)")
+    print("  3. Context Provider (Vector)")
+    print("  4. Context Provider (Graph-Enriched)")
     print("")
     print("  -- Aircraft Database --")
-    print("  6. Aircraft Maintenance Search")
-    print("  7. Flight Delay Analysis")
-    print("  8. Component Health Analysis")
-    print("")
-    print("  -- Memory Provider --")
-    print("  9. Neo4j Memory Provider")
+    print("  5. Aircraft Maintenance Search")
+    print("  6. Flight Delay Analysis")
+    print("  7. Component Health Analysis")
     print("")
     print("  A. Run all demos")
     print("  0. Exit\n")
 
     try:
-        choice = input("Enter your choice (0-9, A): ").strip().upper()
-        if choice in ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A"):
+        choice = input("Enter your choice (0-7, A): ").strip().upper()
+        if choice in ("0", "1", "2", "3", "4", "5", "6", "7", "A"):
             return choice
         else:
-            print("\nInvalid choice. Please enter 0-9 or A.")
+            print("\nInvalid choice. Please enter 0-7 or A.")
             return None
     except (KeyboardInterrupt, EOFError):
         print("\n")
@@ -102,15 +92,13 @@ def main() -> None:
         epilog="""
 Examples:
   uv run start-samples        Interactive menu
-  uv run start-samples 1      Run demo 1 (Azure Thread Memory)
-  uv run start-samples 2      Run demo 2 (Semantic Search)
-  uv run start-samples 3      Run demo 3 (Context Provider - Fulltext)
-  uv run start-samples 4      Run demo 4 (Context Provider - Vector)
-  uv run start-samples 5      Run demo 5 (Context Provider - Graph-Enriched)
-  uv run start-samples 6      Run demo 6 (Aircraft Maintenance Search)
-  uv run start-samples 7      Run demo 7 (Flight Delay Analysis)
-  uv run start-samples 8      Run demo 8 (Component Health Analysis)
-  uv run start-samples 9      Run demo 9 (Neo4j Memory Provider)
+  uv run start-samples 1      Run demo 1 (Semantic Search)
+  uv run start-samples 2      Run demo 2 (Context Provider - Fulltext)
+  uv run start-samples 3      Run demo 3 (Context Provider - Vector)
+  uv run start-samples 4      Run demo 4 (Context Provider - Graph-Enriched)
+  uv run start-samples 5      Run demo 5 (Aircraft Maintenance Search)
+  uv run start-samples 6      Run demo 6 (Flight Delay Analysis)
+  uv run start-samples 7      Run demo 7 (Component Health Analysis)
   uv run start-samples a      Run all demos
 """,
     )
@@ -118,8 +106,8 @@ Examples:
         "demo",
         nargs="?",
         type=str,
-        choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "A"],
-        help="Demo to run: 1-5=Financial, 6-8=Aircraft, 9=Memory, a=All",
+        choices=["1", "2", "3", "4", "5", "6", "7", "a", "A"],
+        help="Demo to run: 1-4=Financial, 5-7=Aircraft, a=All",
     )
     args = parser.parse_args()
 
