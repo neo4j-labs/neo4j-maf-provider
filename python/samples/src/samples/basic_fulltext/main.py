@@ -1,5 +1,5 @@
 """
-Demo: Neo4j Context Provider with ChatAgent (Fulltext Search).
+Demo: Neo4j Context Provider with Agent (Fulltext Search).
 
 Shows how the context provider enhances agent responses with
 knowledge graph data using fulltext search.
@@ -11,7 +11,7 @@ from samples.shared import print_header
 
 
 async def demo_context_provider_basic() -> None:
-    """Demo: Neo4j Context Provider with ChatAgent using fulltext search."""
+    """Demo: Neo4j Context Provider with Agent using fulltext search."""
     from azure.identity.aio import AzureCliCredential
 
     from agent_framework_neo4j import Neo4jContextProvider, Neo4jSettings
@@ -20,7 +20,7 @@ async def demo_context_provider_basic() -> None:
     logger = get_logger()
 
     print_header("Demo: Context Provider (Fulltext Search)")
-    print("This demo shows the Neo4jContextProvider enhancing ChatAgent")
+    print("This demo shows the Neo4jContextProvider enhancing Agent")
     print("responses with knowledge graph context using fulltext search.\n")
 
     # Load configs

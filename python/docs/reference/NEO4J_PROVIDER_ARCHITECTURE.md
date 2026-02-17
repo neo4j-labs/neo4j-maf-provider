@@ -36,18 +36,19 @@ Context providers follow a simple lifecycle that hooks into the agent's request/
 ```mermaid
 sequenceDiagram
     participant User
-    participant Agent as ChatAgent
-    participant Provider as ContextProvider
+    participant Agent
+    participant Provider as BaseContextProvider
     participant LLM as AI Model
 
     User->>Agent: Send message
 
     loop Each invocation
-        Agent->>Provider: invoking(messages)
-        Provider-->>Agent: Context(instructions, messages, tools)
+        Agent->>Provider: before_run(agent, session, context, state)
+        Note over Provider: context.extend_messages(source_id, messages)
         Note over Agent: Merge context with request
         Agent->>LLM: Enhanced request
         LLM-->>Agent: Response
+        Agent->>Provider: after_run(agent, session, context, state)
     end
 
     Agent-->>User: Final response
@@ -57,15 +58,16 @@ sequenceDiagram
 
 | Method | When Called | What It Does |
 |--------|-------------|--------------|
-| `invoking()` | Before each LLM call | Retrieves and returns context to enhance the request |
+| `before_run()` | Before each LLM call | Retrieves context and adds it to the SessionContext |
+| `after_run()` | After each LLM call | Processes the response (e.g., store messages, extract info) |
 
 ### What Context Providers Return
 
-When the `invoking()` method runs, it returns a `Context` object containing:
+When the `before_run()` method runs, it adds context to the `SessionContext` using:
 
-- **Instructions**: Additional system instructions for the agent
-- **Messages**: Extra messages to include in the conversation (usually the retrieved content)
-- **Tools**: Additional capabilities the agent can use
+- **`context.extend_messages(source_id, messages)`**: Extra messages to include in the conversation (usually the retrieved content)
+- **`context.extend_instructions(source_id, instructions)`**: Additional system instructions for the agent
+- **`context.extend_tools(source_id, tools)`**: Additional capabilities the agent can use
 
 The agent automatically merges this context with the user's message before calling the AI model.
 
@@ -85,7 +87,7 @@ The Neo4j Context Provider is designed to follow the same patterns as the Micros
 
 ### Integration with neo4j-graphrag
 
-The provider uses the official `neo4j-graphrag` Python library for all retrieval operations. This library provides well-tested, maintained retrievers that handle the complexity of vector search, fulltext search, and hybrid search. The provider acts as an adapter between the Microsoft Agent Framework's `ContextProvider` interface and neo4j-graphrag's retrievers.
+The provider uses the official `neo4j-graphrag` Python library for all retrieval operations. This library provides well-tested, maintained retrievers that handle the complexity of vector search, fulltext search, and hybrid search. The provider acts as an adapter between the Microsoft Agent Framework's `BaseContextProvider` interface and neo4j-graphrag's retrievers.
 
 **Retrievers used:**
 - `VectorRetriever` — For basic vector search
@@ -109,7 +111,7 @@ The provider supports three search types (vector, fulltext, and hybrid) and two 
 │    retrieval_query="MATCH (node)..."  (optional, for graph_enriched mode)     │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │                                                                               │
-│  invoking(messages) ──────────────────────────────────────────────────────►  │
+│  before_run(agent, session, context, state) ──────────────────────────────►  │
 │       │                                                                       │
 │       ▼                                                                       │
 │  ┌─────────────────┐                                                          │
@@ -146,7 +148,7 @@ The provider supports three search types (vector, fulltext, and hybrid) and two 
 │           │                                                                   │
 │           ▼                                                                   │
 │  ┌─────────────────┐                                                          │
-│  │ Format Context  │  Return Context(messages=[ChatMessage(...)])            │
+│  │ Format Context  │  context.extend_messages(source_id, [Message(...)])     │
 │  └─────────────────┘                                                          │
 │                                                                               │
 └──────────────────────────────────────────────────────────────────────────────┘
@@ -191,7 +193,7 @@ When you use the Neo4j Context Provider with an AI agent, here's what happens be
 ```
 User sends message
        ↓
-Agent Framework calls the provider's "invoking" method
+Agent Framework calls the provider's "before_run" method
        ↓
 Provider searches Neo4j for relevant information
        ↓
@@ -263,7 +265,7 @@ The Company's products compete with many other products...
 
 ### Step 6: Returning Context
 
-Finally, the provider packages all the formatted results into a `Context` object that the Agent Framework understands. This includes:
+Finally, the provider adds all the formatted results to the `SessionContext` via `context.extend_messages()`. This includes:
 
 - A context prompt (explaining to the AI how to use the information)
 - The formatted search results as additional messages

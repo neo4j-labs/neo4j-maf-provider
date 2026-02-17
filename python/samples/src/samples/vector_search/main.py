@@ -2,7 +2,7 @@
 Demo: Neo4j Context Provider with Vector Search.
 
 Shows semantic search using neo4j-graphrag VectorRetriever with
-Azure AI embeddings and ChatAgent.
+Azure AI embeddings and Agent.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ async def demo_context_provider_vector() -> None:
     logger = get_logger()
 
     print_header("Demo: Context Provider (Vector Search)")
-    print("This demo shows the Neo4jContextProvider enhancing ChatAgent")
+    print("This demo shows the Neo4jContextProvider enhancing Agent")
     print("responses with semantic search using neo4j-graphrag retrievers.\n")
 
     # Load configs

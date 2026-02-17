@@ -83,7 +83,7 @@ def create_agent_context(client: AzureAIClient, config: AgentConfig):  # type: i
         config: Agent configuration with name and instructions.
 
     Returns:
-        Async context manager that yields the agent (AsyncContextManager[ChatAgent]).
+        Async context manager that yields the agent (AsyncContextManager[Agent]).
     """
     logger.info(f"Creating agent '{config.name}' with model '{config.model}'...")
     return client.create_agent(

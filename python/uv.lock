@@ -35,9 +35,10 @@ wheels = [
 
 [[package]]
 name = "agent-framework-core"
-version = "1.0.0b260114"
+version = "1.0.0b260212"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "azure-ai-projects" },
     { name = "azure-identity" },
     { name = "mcp", extra = ["ws"] },
     { name = "openai" },
@@ -46,12 +47,12 @@ dependencies = [
     { name = "opentelemetry-semantic-conventions-ai" },
     { name = "packaging" },
     { name = "pydantic" },
-    { name = "pydantic-settings" },
+    { name = "python-dotenv" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9b/f5/da72749bff8b8ebca44e44a455d09cb26a4dd322aaa55323643d5b5f6484/agent_framework_core-1.0.0b260114.tar.gz", hash = "sha256:f9f84d86bf77003c3c6e7400073992a6bc15faa6513a1b77115ac9b9784cea9f", size = 294919, upload-time = "2026-01-14T23:54:21.123Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1f/75/33444ede8faa90ebc0c81a7c362c401c9a29c224d8e4ef3653b018ad32f3/agent_framework_core-1.0.0b260212.tar.gz", hash = "sha256:4490e05f48dff6fe616331e46b4b4432e54a81075475c7087dce91b8c462c8d0", size = 259769, upload-time = "2026-02-13T00:27:18.66Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/33/bf/02ed40e3a3fffbf91ebc3c1783af5124a483915017edec20658beb03c588/agent_framework_core-1.0.0b260114-py3-none-any.whl", hash = "sha256:7a270ec6b84d87be167adf3e86f0b91dfdc30f4f598c8d57cd11f6f9f352110c", size = 339684, upload-time = "2026-01-14T23:54:40.62Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/b6/6c32def3967496e3688a69fda5bb55066688721c2839bc220de8ca3b306b/agent_framework_core-1.0.0b260212-py3-none-any.whl", hash = "sha256:18fc00c35911bd8a8c49055eda5204dc6dde761cf2379d32b16a91aaf6635dc0", size = 301370, upload-time = "2026-02-13T00:27:32.307Z" },
 ]
 
 [[package]]
@@ -74,7 +75,7 @@ azure = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agent-framework-core", specifier = ">=1.0.0b0" },
+    { name = "agent-framework-core", specifier = ">=1.0.0b260212" },
     { name = "azure-ai-inference", marker = "extra == 'azure'", specifier = ">=1.0.0b7" },
     { name = "azure-identity", marker = "extra == 'azure'", specifier = ">=1.19.0" },
     { name = "neo4j", specifier = ">=5.0.0" },

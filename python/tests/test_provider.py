@@ -5,7 +5,7 @@ Tests the provider initialization and configuration validation.
 """
 
 import pytest
-from agent_framework import ChatMessage, Role
+from agent_framework import AgentSession, Message, SessionContext
 
 from agent_framework_neo4j import Neo4jContextProvider, Neo4jSettings
 
@@ -158,28 +158,29 @@ class TestGraphEnrichment:
         assert "collect(DISTINCT risk.name)" in provider._retrieval_query
 
 
-class TestInvoking:
-    """Test the invoking method."""
+class TestBeforeRun:
+    """Test the before_run method."""
 
     @pytest.mark.asyncio
-    async def test_invoking_returns_empty_when_not_connected(self) -> None:
-        """Invoking should return empty context when not connected."""
+    async def test_before_run_no_op_when_not_connected(self) -> None:
+        """before_run should not add context when not connected."""
         provider = Neo4jContextProvider(
             index_name="test_index",
             index_type="fulltext",
         )
         # Test with single message
-        message = ChatMessage(role=Role.USER, text="test query")
-        context = await provider.invoking(message)
-        assert context.messages == []
+        session = AgentSession()
+        context = SessionContext(input_messages=[Message(role="user", text="test query")])
+        await provider.before_run(agent=None, session=session, context=context, state={})
+        assert context.context_messages == {}
 
         # Test with message list
-        messages = [
-            ChatMessage(role=Role.USER, text="first query"),
-            ChatMessage(role=Role.ASSISTANT, text="first response"),
-        ]
-        context = await provider.invoking(messages)
-        assert context.messages == []
+        context = SessionContext(input_messages=[
+            Message(role="user", text="first query"),
+            Message(role="assistant", text="first response"),
+        ])
+        await provider.before_run(agent=None, session=session, context=context, state={})
+        assert context.context_messages == {}
 
 
 class TestHybridMode:

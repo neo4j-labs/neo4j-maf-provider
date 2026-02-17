@@ -133,7 +133,7 @@ Chunk -[:FROM_DOCUMENT]-> Document <-[:FILED]- Company -[:FACES_RISK]-> RiskFact
 
 ### Sample 2: Context Provider - Fulltext (`basic_fulltext/main.py`)
 
-Basic fulltext search context provider integrated with a ChatAgent. Uses Neo4j's fulltext index to find relevant document chunks based on keyword matching.
+Basic fulltext search context provider integrated with an Agent. Uses Neo4j's fulltext index to find relevant document chunks based on keyword matching.
 
 **What it shows:**
 - Creating a `Neo4jContextProvider` with `index_type="fulltext"`
@@ -155,7 +155,7 @@ provider = Neo4jContextProvider(
 
 ### Sample 3: Context Provider - Vector (`vector_search/main.py`)
 
-Vector similarity search context provider with a ChatAgent. Uses Azure AI embeddings to find semantically similar content even when exact keywords don't match.
+Vector similarity search context provider with an Agent. Uses Azure AI embeddings to find semantically similar content even when exact keywords don't match.
 
 **What it shows:**
 - Creating a `Neo4jContextProvider` with `index_type="vector"`
