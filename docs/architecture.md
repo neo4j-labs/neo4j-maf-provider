@@ -174,11 +174,13 @@ When using graph enrichment, the `retrieval_query` parameter defines how to trav
 MATCH (node)-[:FROM_DOCUMENT]->(doc:Document)
 MATCH (doc)<-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
+WITH node, score, company, collect(DISTINCT risk.name) AS risks
+WHERE score IS NOT NULL
 RETURN
     node.text AS text,
     score,
     company.name AS company,
-    collect(DISTINCT risk.name) AS risks
+    risks
 ORDER BY score DESC
 ```
 

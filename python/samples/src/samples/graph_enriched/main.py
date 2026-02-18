@@ -20,9 +20,10 @@ from samples.shared import print_header
 RETRIEVAL_QUERY = """
 MATCH (node)-[:FROM_DOCUMENT]->(doc:Document)<-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
-OPTIONAL MATCH (company)-[:MENTIONS]->(product:Product)
 WITH node, score, company, doc,
-     collect(DISTINCT risk.name)[0..5] AS risks,
+     collect(DISTINCT risk.name)[0..5] AS risks
+OPTIONAL MATCH (company)-[:MENTIONS]->(product:Product)
+WITH node, score, company, doc, risks,
      collect(DISTINCT product.name)[0..5] AS products
 WHERE score IS NOT NULL
 RETURN

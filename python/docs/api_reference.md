@@ -18,6 +18,7 @@ provider = Neo4jContextProvider(
     # Optional: graph enrichment via custom Cypher
     retrieval_query="""
         MATCH (node)-[:FROM_DOCUMENT]->(doc)
+        WHERE score IS NOT NULL
         RETURN node.text AS text, score, doc.title AS title
         ORDER BY score DESC
     """,
