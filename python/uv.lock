@@ -20,17 +20,16 @@ members = [
 
 [[package]]
 name = "agent-framework-azure-ai"
-version = "1.0.0b260114"
+version = "1.0.0b260212"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agent-framework-core" },
     { name = "aiohttp" },
     { name = "azure-ai-agents" },
-    { name = "azure-ai-projects" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d6/a2/6a614d090e6827a48ce9ddcc1246a29eefd01c5811e4bdb88f1d12efd741/agent_framework_azure_ai-1.0.0b260114.tar.gz", hash = "sha256:223047329af21679ca1bee165625bac4e9936b44fdc562a32ecbbd614b956ac9", size = 25749, upload-time = "2026-01-14T23:54:33.15Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0c/de/ad2254deba49e322581a08eef217be847bd17db5d3b93df5ffb98f7d5b27/agent_framework_azure_ai-1.0.0b260212.tar.gz", hash = "sha256:6b717a0d01780977c5fc61cde92ead4ece6c7be31b46caa82157e975e498f1a2", size = 36791, upload-time = "2026-02-13T00:27:20.204Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/26/94/100e41d7609e79b6b2f304deaddaf60dbf434c414e2177d4ef4f52622861/agent_framework_azure_ai-1.0.0b260114-py3-none-any.whl", hash = "sha256:ca19273b1e8beb0871c4374592511428c50ece68f5e188311f4c4efbb9abbb0d", size = 29444, upload-time = "2026-01-14T23:54:15.849Z" },
+    { url = "https://files.pythonhosted.org/packages/99/4e/9a60ac36f50856caf0715b139ddc2175aed7d686405dfde47d4ece3fe6ba/agent_framework_azure_ai-1.0.0b260212-py3-none-any.whl", hash = "sha256:361e6ed3d0c1cd5454e05e47921520a4aedd77d129937fbe5d97b731ecde369b", size = 41253, upload-time = "2026-02-13T00:38:08.481Z" },
 ]
 
 [[package]]

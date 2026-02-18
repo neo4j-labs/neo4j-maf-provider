@@ -8,6 +8,7 @@ from .aircraft_domain import (
     demo_aircraft_flight_delays,
     demo_aircraft_maintenance_search,
     demo_component_health,
+    demo_maintenance_docs,
 )
 from .basic_fulltext import demo_context_provider_basic
 from .graph_enriched import demo_context_provider_graph_enriched
@@ -21,4 +22,5 @@ __all__ = [
     "demo_aircraft_maintenance_search",
     "demo_aircraft_flight_delays",
     "demo_component_health",
+    "demo_maintenance_docs",
 ]

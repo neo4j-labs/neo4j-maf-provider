@@ -6,10 +6,20 @@ Framework (2025) with Microsoft Foundry (V2 SDK - azure-ai-projects) integration
 for persistent, service-managed agents.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from agent_framework import Agent
 from agent_framework.azure import AzureAIClient
 from azure.identity.aio import AzureCliCredential
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from agent_framework import BaseContextProvider
 
 from .logging import get_logger
 
@@ -53,8 +63,6 @@ def create_agent_client(config: AgentConfig, credential: AzureCliCredential) -> 
     """
     Create an AzureAIClient configured for Foundry.
 
-    The returned client should be used as an async context manager to create agents.
-
     Args:
         config: Agent configuration with project endpoint and model settings.
         credential: Azure CLI credential for authentication.
@@ -74,19 +82,30 @@ def create_agent_client(config: AgentConfig, credential: AzureCliCredential) -> 
     return AzureAIClient(**client_kwargs)
 
 
-def create_agent_context(client: AzureAIClient, config: AgentConfig):  # type: ignore[return]
+def create_agent(
+    client: AzureAIClient,
+    config: AgentConfig,
+    *,
+    instructions: str | None = None,
+    context_providers: Sequence[BaseContextProvider] | None = None,
+) -> Agent:
     """
-    Create an agent context manager from the client.
+    Create an Agent with the given client and configuration.
 
     Args:
         client: Configured AzureAIClient.
         config: Agent configuration with name and instructions.
+        instructions: Override instructions (uses config.instructions if not provided).
+        context_providers: Optional context providers to attach to the agent.
 
     Returns:
-        Async context manager that yields the agent (AsyncContextManager[Agent]).
+        Configured Agent instance (use as async context manager).
     """
+    agent_instructions = instructions or config.instructions
     logger.info(f"Creating agent '{config.name}' with model '{config.model}'...")
-    return client.create_agent(
+    return Agent(
+        client=client,
         name=config.name,
-        instructions=config.instructions,
+        instructions=agent_instructions,
+        context_providers=list(context_providers) if context_providers else None,
     )

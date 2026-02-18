@@ -38,7 +38,7 @@ async def demo_aircraft_flight_delays() -> None:
     from azure.identity.aio import AzureCliCredential
 
     from agent_framework_neo4j import Neo4jContextProvider
-    from samples.shared import AgentConfig, create_agent_client, get_logger
+    from samples.shared import AgentConfig, create_agent, create_agent_client, get_logger
 
     logger = get_logger()
 
@@ -96,22 +96,26 @@ async def demo_aircraft_flight_delays() -> None:
             ),
         )
 
-        # Create agent client
+        # Create agent client and agent
         client = create_agent_client(agent_config, credential)
+        agent = create_agent(
+            client,
+            agent_config,
+            instructions=(
+                "You are a flight operations analyst. Analyze delay records and "
+                "explain causes, durations, and affected flights/routes. Be concise."
+            ),
+            context_providers=[provider],
+        )
 
         async with provider:
             print("Connected to Aircraft database!\n")
 
-            async with client.create_agent(
-                name=agent_config.name,
-                instructions=(
-                    "You are a flight operations analyst. Analyze delay records and "
-                    "explain causes, durations, and affected flights/routes. Be concise."
-                ),
-                context_provider=provider,
-            ) as agent:
+            async with agent:
                 print("Agent created with delay analysis context!\n")
                 print("-" * 50)
+
+                session = agent.create_session()
 
                 # Demo queries for delay analysis (limited to 2 to manage context)
                 queries = [
@@ -122,7 +126,7 @@ async def demo_aircraft_flight_delays() -> None:
                 for i, query in enumerate(queries, 1):
                     print(f"\n[Query {i}] User: {query}\n")
 
-                    response = await agent.run(query)
+                    response = await agent.run(query, session=session)
                     print(f"[Query {i}] Agent: {response.text}\n")
                     print("-" * 50)
 

@@ -23,6 +23,7 @@ def _get_demos() -> dict[str, DemoFunc]:
     """Lazy load demo functions to avoid circular imports."""
     from samples.aircraft_domain.component_health import demo_component_health
     from samples.aircraft_domain.flight_delays import demo_aircraft_flight_delays
+    from samples.aircraft_domain.maintenance_docs import demo_maintenance_docs
     from samples.aircraft_domain.maintenance_search import demo_aircraft_maintenance_search
     from samples.basic_fulltext.main import demo_context_provider_basic
     from samples.graph_enriched.main import demo_context_provider_graph_enriched
@@ -37,6 +38,7 @@ def _get_demos() -> dict[str, DemoFunc]:
         "5": demo_aircraft_maintenance_search,
         "6": demo_aircraft_flight_delays,
         "7": demo_component_health,
+        "8": demo_maintenance_docs,
     }
 
 
@@ -54,13 +56,14 @@ def print_menu() -> str | None:
     print("  5. Aircraft Maintenance Search")
     print("  6. Flight Delay Analysis")
     print("  7. Component Health Analysis")
+    print("  8. Maintenance Manual Search")
     print("")
     print("  A. Run all demos")
     print("  0. Exit\n")
 
     try:
-        choice = input("Enter your choice (0-7, A): ").strip().upper()
-        if choice in ("0", "1", "2", "3", "4", "5", "6", "7", "A"):
+        choice = input("Enter your choice (0-8, A): ").strip().upper()
+        if choice in ("0", "1", "2", "3", "4", "5", "6", "7", "8", "A"):
             return choice
         else:
             print("\nInvalid choice. Please enter 0-7 or A.")
@@ -99,6 +102,7 @@ Examples:
   uv run start-samples 5      Run demo 5 (Aircraft Maintenance Search)
   uv run start-samples 6      Run demo 6 (Flight Delay Analysis)
   uv run start-samples 7      Run demo 7 (Component Health Analysis)
+  uv run start-samples 8      Run demo 8 (Maintenance Manual Search)
   uv run start-samples a      Run all demos
 """,
     )
@@ -106,8 +110,8 @@ Examples:
         "demo",
         nargs="?",
         type=str,
-        choices=["1", "2", "3", "4", "5", "6", "7", "a", "A"],
-        help="Demo to run: 1-4=Financial, 5-7=Aircraft, a=All",
+        choices=["1", "2", "3", "4", "5", "6", "7", "8", "a", "A"],
+        help="Demo to run: 1-4=Financial, 5-8=Aircraft, a=All",
     )
     args = parser.parse_args()
 

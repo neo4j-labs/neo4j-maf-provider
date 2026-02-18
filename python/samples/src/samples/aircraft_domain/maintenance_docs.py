@@ -1,8 +1,9 @@
 """
-Demo: Aircraft Maintenance Search with Graph-Enriched Context.
+Demo: Maintenance Manual Search with Graph-Enriched Context.
 
-Shows fulltext search on maintenance events using neo4j-graphrag FulltextRetriever
-with graph traversal to enrich results with aircraft, system, and component context.
+Shows fulltext search on maintenance manual Document nodes using
+neo4j-graphrag FulltextRetriever with graph traversal to enrich results
+with aircraft context and chunk content.
 
 This demo uses the Aircraft database (AIRCRAFT_NEO4J_* env vars).
 """
@@ -14,28 +15,31 @@ import os
 
 from samples.shared import print_header
 
-# Graph-enriched retrieval query for maintenance events
-# Traverses: MaintenanceEvent <- Component <- System <- Aircraft
-# Note: Uses null-safe sorting per Cypher best practices
-MAINTENANCE_RETRIEVAL_QUERY = """
-MATCH (node)<-[:HAS_EVENT]-(comp:Component)<-[:HAS_COMPONENT]-(sys:System)<-[:HAS_SYSTEM]-(aircraft:Aircraft)
+# Graph-enriched retrieval query for maintenance documents
+# Traverses: Document -> Aircraft (via APPLIES_TO)
+#            Document <- Chunk  (via FROM_DOCUMENT, sampled content)
+DOCUMENT_RETRIEVAL_QUERY = """
+MATCH (node)-[:APPLIES_TO]->(aircraft:Aircraft)
+OPTIONAL MATCH (node)<-[:FROM_DOCUMENT]-(chunk:Chunk)
+WITH node, score, aircraft,
+     count(chunk) AS chunk_count,
+     collect(chunk.text)[0] AS sample_text
 WHERE score IS NOT NULL
 RETURN
-    node.fault AS fault,
-    node.corrective_action AS corrective_action,
-    node.severity AS severity,
+    node.title AS title,
+    node.aircraftType AS aircraft_type,
     score,
-    aircraft.tail_number AS aircraft,
+    aircraft.tail_number AS tail_number,
     aircraft.model AS model,
-    sys.name AS system,
-    sys.type AS system_type,
-    comp.name AS component
+    aircraft.manufacturer AS manufacturer,
+    chunk_count AS chunks,
+    left(sample_text, 500) AS sample_content
 ORDER BY score DESC
 """
 
 
-async def demo_aircraft_maintenance_search() -> None:
-    """Demo: Aircraft Maintenance Search with graph-enriched context."""
+async def demo_maintenance_docs() -> None:
+    """Demo: Maintenance Manual Search with graph-enriched context."""
     from azure.identity.aio import AzureCliCredential
 
     from agent_framework_neo4j import Neo4jContextProvider
@@ -43,9 +47,9 @@ async def demo_aircraft_maintenance_search() -> None:
 
     logger = get_logger()
 
-    print_header("Demo: Aircraft Maintenance Search")
-    print("This demo searches maintenance events using fulltext search")
-    print("and enriches results with aircraft, system, and component context.\n")
+    print_header("Demo: Maintenance Manual Search")
+    print("This demo searches maintenance manual documents using fulltext search")
+    print("and enriches results with aircraft context and document content.\n")
 
     # Load configs
     agent_config = AgentConfig()
@@ -67,34 +71,33 @@ async def demo_aircraft_maintenance_search() -> None:
     print(f"Agent: {agent_config.name}")
     print(f"Model: {agent_config.model}")
     print(f"Aircraft DB: {aircraft_uri}")
-    print("Index: maintenance_search (fulltext)")
+    print("Index: document_search (fulltext)")
     print("Mode: graph_enriched\n")
 
     print("Graph Traversal Pattern:")
     print("-" * 50)
-    print("  MaintenanceEvent <- Component <- System <- Aircraft")
-    print("  Returns: fault, corrective_action, severity, aircraft, system, component")
+    print("  Document -[:APPLIES_TO]-> Aircraft")
+    print("  Document <-[:FROM_DOCUMENT]- Chunk (sampled)")
+    print("  Returns: title, aircraft_type, tail_number, manufacturer, chunks, sample_content")
     print("-" * 50 + "\n")
 
     credential = AzureCliCredential()
 
     try:
         # Create context provider with fulltext search (no embedder needed)
-        # Uses FulltextRetriever internally
         provider = Neo4jContextProvider(
             uri=aircraft_uri,
             username=aircraft_username,
             password=aircraft_password,
-            index_name="maintenance_search",
+            index_name="document_search",
             index_type="fulltext",
-            retrieval_query=MAINTENANCE_RETRIEVAL_QUERY,
-            top_k=5,
+            retrieval_query=DOCUMENT_RETRIEVAL_QUERY,
+            top_k=3,
             context_prompt=(
-                "## Aircraft Maintenance Records\n"
-                "Use the following maintenance event data to answer questions about "
-                "aircraft faults, repairs, and maintenance history. Each record includes "
-                "the fault description, corrective action taken, severity, and the affected "
-                "aircraft, system, and component:"
+                "## Maintenance Manual Documents\n"
+                "Use the following maintenance manual data to answer questions about "
+                "aircraft maintenance documentation. Each record includes the document "
+                "title, aircraft type, associated aircraft, and a sample of the content:"
             ),
         )
 
@@ -104,12 +107,11 @@ async def demo_aircraft_maintenance_search() -> None:
             client,
             agent_config,
             instructions=(
-                "You are an aircraft maintenance assistant. When asked about maintenance "
-                "issues, analyze the provided maintenance records and explain:\n"
-                "- What faults were found\n"
-                "- What corrective actions were taken\n"
-                "- Which aircraft, systems, and components were affected\n"
-                "- The severity level of issues\n\n"
+                "You are an aircraft documentation specialist. When asked about maintenance "
+                "manuals, analyze the provided document records and explain:\n"
+                "- Which manuals are available and what aircraft they cover\n"
+                "- What content the manuals contain based on the sample text\n"
+                "- How the documentation relates to specific aircraft\n\n"
                 "Be specific and cite the actual data from the records."
             ),
             context_providers=[provider],
@@ -120,17 +122,14 @@ async def demo_aircraft_maintenance_search() -> None:
             print("Connected to Aircraft database!\n")
 
             async with agent:
-                print("Agent created with maintenance search context!\n")
+                print("Agent created with maintenance document search context!\n")
                 print("-" * 50)
 
                 session = agent.create_session()
 
-                # Demo queries for maintenance search
-                # Note: Queries should use terms that exist in fault/corrective_action fields
                 queries = [
-                    "What maintenance issues involve vibration?",
-                    "Tell me about electrical faults and how they were fixed",
-                    "What sensor drift issues have been recorded?",
+                    "What maintenance manuals are available for Airbus aircraft?",
+                    "Tell me about the B737 maintenance documentation",
                 ]
 
                 for i, query in enumerate(queries, 1):
@@ -141,7 +140,7 @@ async def demo_aircraft_maintenance_search() -> None:
                     print("-" * 50)
 
                 print(
-                    "\nDemo complete! Fulltext search found maintenance records and "
+                    "\nDemo complete! Fulltext search found maintenance manuals and "
                     "graph traversal enriched them with aircraft context."
                 )
 

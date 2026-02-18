@@ -41,7 +41,7 @@ async def demo_component_health() -> None:
     from azure.identity.aio import AzureCliCredential
 
     from agent_framework_neo4j import Neo4jContextProvider
-    from samples.shared import AgentConfig, create_agent_client, get_logger
+    from samples.shared import AgentConfig, create_agent, create_agent_client, get_logger
 
     logger = get_logger()
 
@@ -100,22 +100,26 @@ async def demo_component_health() -> None:
             ),
         )
 
-        # Create agent client
+        # Create agent client and agent
         client = create_agent_client(agent_config, credential)
+        agent = create_agent(
+            client,
+            agent_config,
+            instructions=(
+                "You are an aircraft component analyst. Analyze component data and "
+                "explain maintenance history, system context, and health status. Be concise."
+            ),
+            context_providers=[provider],
+        )
 
         async with provider:
             print("Connected to Aircraft database!\n")
 
-            async with client.create_agent(
-                name=agent_config.name,
-                instructions=(
-                    "You are an aircraft component analyst. Analyze component data and "
-                    "explain maintenance history, system context, and health status. Be concise."
-                ),
-                context_provider=provider,
-            ) as agent:
+            async with agent:
                 print("Agent created with component health context!\n")
                 print("-" * 50)
+
+                session = agent.create_session()
 
                 # Demo queries for component health analysis
                 # Note: Queries should use terms in component name/type fields
@@ -127,7 +131,7 @@ async def demo_component_health() -> None:
                 for i, query in enumerate(queries, 1):
                     print(f"\n[Query {i}] User: {query}\n")
 
-                    response = await agent.run(query)
+                    response = await agent.run(query, session=session)
                     print(f"[Query {i}] Agent: {response.text}\n")
                     print("-" * 50)
 

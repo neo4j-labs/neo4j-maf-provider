@@ -15,7 +15,7 @@ async def demo_context_provider_basic() -> None:
     from azure.identity.aio import AzureCliCredential
 
     from agent_framework_neo4j import Neo4jContextProvider, Neo4jSettings
-    from samples.shared import AgentConfig, create_agent_client, get_logger
+    from samples.shared import AgentConfig, create_agent, create_agent_client, get_logger
 
     logger = get_logger()
 
@@ -59,24 +59,28 @@ async def demo_context_provider_basic() -> None:
             ),
         )
 
-        # Create agent client
+        # Create agent client and agent
         client = create_agent_client(agent_config, credential)
+        agent = create_agent(
+            client,
+            agent_config,
+            instructions=(
+                "You are a helpful assistant that answers questions about companies "
+                "using the provided knowledge graph context. Be concise and cite "
+                "specific information from the context when available."
+            ),
+            context_providers=[provider],
+        )
 
         # Use both provider and agent as async context managers
         async with provider:
             print("Connected to Neo4j!\n")
 
-            async with client.create_agent(
-                name=agent_config.name,
-                instructions=(
-                    "You are a helpful assistant that answers questions about companies "
-                    "using the provided knowledge graph context. Be concise and cite "
-                    "specific information from the context when available."
-                ),
-                context_provider=provider,
-            ) as agent:
+            async with agent:
                 print("Agent created with context provider!\n")
                 print("-" * 50)
+
+                session = agent.create_session()
 
                 # Demo queries that will trigger context retrieval
                 queries = [
@@ -88,7 +92,7 @@ async def demo_context_provider_basic() -> None:
                 for i, query in enumerate(queries, 1):
                     print(f"\n[Query {i}] User: {query}\n")
 
-                    response = await agent.run(query)
+                    response = await agent.run(query, session=session)
                     print(f"[Query {i}] Agent: {response.text}\n")
                     print("-" * 50)
 

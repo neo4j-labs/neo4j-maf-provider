@@ -47,7 +47,7 @@ async def demo_context_provider_graph_enriched() -> None:
         Neo4jContextProvider,
         Neo4jSettings,
     )
-    from samples.shared import AgentConfig, create_agent_client, get_logger
+    from samples.shared import AgentConfig, create_agent, create_agent_client, get_logger
 
     logger = get_logger()
 
@@ -120,29 +120,33 @@ async def demo_context_provider_graph_enriched() -> None:
             ),
         )
 
-        # Create agent client
+        # Create agent client and agent
         client = create_agent_client(agent_config, credential)
+        agent = create_agent(
+            client,
+            agent_config,
+            instructions=(
+                "You are a helpful assistant that answers questions about companies "
+                "using graph-enriched context. Your context includes:\n"
+                "- Semantic search matches from company filings\n"
+                "- Company names and ticker symbols\n"
+                "- Products the company mentions\n"
+                "- Risk factors the company faces\n\n"
+                "When answering, cite the company, relevant products, and risks. "
+                "Be specific and reference the enriched graph data."
+            ),
+            context_providers=[provider],
+        )
 
         # Use both provider and agent as async context managers
         async with provider:
             print("Connected to Neo4j with graph-enriched mode!\n")
 
-            async with client.create_agent(
-                name=agent_config.name,
-                instructions=(
-                    "You are a helpful assistant that answers questions about companies "
-                    "using graph-enriched context. Your context includes:\n"
-                    "- Semantic search matches from company filings\n"
-                    "- Company names and ticker symbols\n"
-                    "- Products the company mentions\n"
-                    "- Risk factors the company faces\n\n"
-                    "When answering, cite the company, relevant products, and risks. "
-                    "Be specific and reference the enriched graph data."
-                ),
-                context_provider=provider,
-            ) as agent:
+            async with agent:
                 print("Agent created with graph-enriched context provider!\n")
                 print("-" * 50)
+
+                session = agent.create_session()
 
                 # Demo queries that benefit from graph enrichment
                 queries = [
@@ -154,7 +158,7 @@ async def demo_context_provider_graph_enriched() -> None:
                 for i, query in enumerate(queries, 1):
                     print(f"\n[Query {i}] User: {query}\n")
 
-                    response = await agent.run(query)
+                    response = await agent.run(query, session=session)
                     print(f"[Query {i}] Agent: {response.text}\n")
                     print("-" * 50)
 
