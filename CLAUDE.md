@@ -62,7 +62,7 @@ uv run setup_env.py            # Pull env vars from azd into .env
 ```bash
 cd python
 uv run start-samples           # Interactive menu
-uv run start-samples 3         # Run specific demo (1-7)
+uv run start-samples 3         # Run specific demo (1-8)
 uv run start-samples a         # Run all demos
 ```
 
@@ -88,7 +88,7 @@ uv publish --package agent-framework-neo4j  # Publish to PyPI
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `Neo4jContextProvider` | `python/packages/.../agent_framework_neo4j/_provider.py` | Main context provider implementing `ContextProvider` interface |
+| `Neo4jContextProvider` | `python/packages/.../agent_framework_neo4j/_provider.py` | Main context provider implementing `BaseContextProvider` interface |
 | `ProviderConfig` | `python/packages/.../agent_framework_neo4j/_config.py` | Pydantic configuration validation |
 | `Neo4jSettings` | `python/packages/.../agent_framework_neo4j/_settings.py` | Pydantic settings for Neo4j credentials |
 | `AzureAISettings` | `python/packages/.../agent_framework_neo4j/_settings.py` | Pydantic settings for Azure AI |
@@ -97,21 +97,21 @@ uv publish --package agent-framework-neo4j  # Publish to PyPI
 
 ### Search Flow
 
-1. **invoking()** called → Provider receives conversation messages
-2. Filter to USER/ASSISTANT messages, take recent N messages
+1. **before_run()** called → Provider reads `context.input_messages`
+2. Filter to user/assistant messages, take recent N messages
 3. Concatenate message text (no entity extraction)
 4. Execute search based on `index_type`:
    - **vector**: Embed query → `db.index.vector.queryNodes()`
    - **fulltext**: Optional stop word filtering → `db.index.fulltext.queryNodes()`
    - **hybrid**: Both vector and fulltext search, combined scores
 5. If `retrieval_query` provided: Execute custom Cypher for graph traversal
-6. Format results → Return `Context(messages=[...])`
+6. Format results → `context.extend_messages(source_id, [Message(...)])`
 
 ### Samples
 
 Two databases are used in demos:
 - **Financial Documents** (samples 1-4): SEC filings with Company, Document, Chunk, RiskFactor, Product nodes
-- **Aircraft Domain** (samples 5-7): Maintenance events, components, flights, delays
+- **Aircraft Domain** (samples 5-8): Maintenance events, components, flights, delays
 
 ## Environment Variables
 
@@ -135,6 +135,7 @@ AZURE_AI_EMBEDDING_NAME       # Embedding model (default: text-embedding-ada-002
 
 ### Creating a Context Provider
 ```python
+from agent_framework import Agent
 from agent_framework_neo4j import Neo4jContextProvider, Neo4jSettings
 
 settings = Neo4jSettings()  # Loads from environment
@@ -150,13 +151,23 @@ provider = Neo4jContextProvider(
     # Optional: graph enrichment via custom Cypher
     retrieval_query="""
         MATCH (node)-[:FROM_DOCUMENT]->(doc)
+        WHERE score IS NOT NULL
         RETURN node.text AS text, score, doc.title AS title
         ORDER BY score DESC
     """,
 )
 
+agent = Agent(
+    client=client,
+    name="my-agent",
+    instructions="You are a helpful assistant.",
+    context_providers=[provider],
+)
+
 async with provider:
-    # Use with agent
+    async with agent:
+        session = agent.create_session()
+        response = await agent.run("What products does Acme offer?", session=session)
 ```
 
 ### Retrieval Query Requirements
