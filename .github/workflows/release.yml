@@ -21,19 +21,15 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
 
-      - name: Install dependencies
-        working-directory: python
-        run: uv sync --prerelease=allow
-
       - name: Build package
-        working-directory: python
-        run: uv build --package agent-framework-neo4j
+        working-directory: python/packages/agent-framework-neo4j
+        run: uv build
 
       - name: Store distribution packages
         uses: actions/upload-artifact@v4
         with:
           name: python-package-distributions
-          path: python/dist/
+          path: python/packages/agent-framework-neo4j/dist/
 
   publish-pypi:
     needs: build
