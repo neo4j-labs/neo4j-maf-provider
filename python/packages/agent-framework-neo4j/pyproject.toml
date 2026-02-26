@@ -1,0 +1,65 @@
+[project]
+name = "agent-framework-neo4j"
+version = "0.4.0"
+description = "Neo4j Context Provider for Microsoft Agent Framework - RAG with knowledge graphs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Microsoft", email = "af-support@microsoft.com" }
+]
+keywords = [
+    "neo4j",
+    "knowledge-graph",
+    "rag",
+    "context-provider",
+    "agent-framework",
+    "llm",
+    "vector-search",
+    "graph-database",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Database",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "agent-framework-core>=1.0.0b260212",
+    "neo4j>=5.0.0",
+    "neo4j-graphrag>=1.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+]
+
+[project.optional-dependencies]
+azure = [
+    "azure-identity>=1.19.0",
+    "azure-ai-inference>=1.0.0b7",
+]
+
+[project.urls]
+homepage = "https://aka.ms/agent-framework"
+source = "https://github.com/microsoft/agent-framework/tree/main/python"
+issues = "https://github.com/microsoft/agent-framework/issues"
+
+[tool.flit.module]
+name = "agent_framework_neo4j"
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+
+[tool.mypy]
+extends = "../../pyproject.toml"
+
+[build-system]
+requires = ["flit_core>=3.11,<4.0"]
+build-backend = "flit_core.buildapi"

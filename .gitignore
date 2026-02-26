@@ -182,6 +182,8 @@ bld/
 *.snupkg
 **/[Pp]ackages/*
 !**/[Pp]ackages/build/
+!python/packages/
+!python/packages/**
 *.nuget.props
 *.nuget.targets
 project.lock.json
