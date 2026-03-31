@@ -38,21 +38,33 @@ AI model responds with knowledge from your data
 | Language | Status | Documentation |
 |----------|--------|---------------|
 | **Python** | Available | [python/README.md](python/README.md) |
-| **.NET** | Planned | Coming soon |
+| **.NET** | Available | [dotnet/README.md](dotnet/README.md) |
 
+## Getting Started
 
-See [python/README.md](python/README.md) for complete documentation.
+Both implementations share the same Azure OpenAI resources and Neo4j database. See [examples/SETUP.md](examples/SETUP.md) for sample setup instructions covering:
+- Azure OpenAI provisioning (gpt-4o + text-embedding-3-small)
+- Neo4j database setup and demo data loading
+- Environment configuration (`.env`)
 
 ## Repository Structure
 
 ```
 neo4j-maf-provider/
+├── examples/                  # Sample setup and provisioning
+│   ├── SETUP.md               # Setup guide
+│   ├── main.bicep             # Azure Bicep template
+│   └── scripts/               # Setup and seed scripts
 ├── python/                    # Python implementation
 │   ├── packages/              # Publishable PyPI library
 │   ├── samples/               # Demo applications
-│   ├── tests/                 # Test suite
-│   └── docs/                  # Python documentation
-├── dotnet/                    # .NET implementation (planned)
+│   └── tests/                 # Test suite
+├── dotnet/                    # .NET implementation
+│   ├── src/                   # NuGet library
+│   ├── samples/               # Demo applications
+│   └── tests/                 # Test suite
+├── azure.yaml                 # Azure Developer CLI config
+├── .env.sample                # Environment variable template
 ├── docs/                      # Shared documentation
 ├── README.md                  # This file
 ├── CONTRIBUTING.md            # Contribution guidelines
@@ -72,19 +84,32 @@ neo4j-maf-provider/
 - [API Reference](python/docs/api_reference.md) - Public API
 - [Publishing Guide](python/docs/PUBLISH.md) - PyPI publication
 
+### .NET Documentation
+
+- [.NET README](dotnet/README.md) - Quick start, installation, and API reference
+
 ## Samples
 
-The Python implementation includes demo applications:
+Both implementations include demo applications using the same Neo4j database and queries:
 
 | Category | Samples |
 |----------|---------|
 | **Financial Documents** | Basic fulltext, vector search, graph-enriched |
 | **Aircraft Domain** | Maintenance search, flight delays, component health |
 
+### Python
+
 ```bash
 cd python
 uv sync --prerelease=allow
 uv run start-samples
+```
+
+### .NET
+
+```bash
+cd dotnet
+dotnet run --project samples/Neo4j.Samples
 ```
 
 ## Contributing

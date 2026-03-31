@@ -19,7 +19,7 @@ prerelease = "allow"
 
 [dependency-groups]
 dev = [
-    "agent-framework-neo4j",
+    "agent-framework-neo4j[azure]",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "pytest-cov>=6.0.0",

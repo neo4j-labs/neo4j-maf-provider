@@ -212,8 +212,8 @@ The Bicep templates deploy at **resource group scope** (not subscription scope):
 
 | File | Purpose |
 |------|---------|
-| `infra/main.bicep` | Main deployment template |
-| `infra/main.parameters.json` | Parameter values from azd env |
+| `examples/main.bicep` | Main deployment template |
+| `examples/main.parameters.json` | Parameter values from azd env |
 | `azure.yaml` | Azure Developer CLI configuration |
 | `.devcontainer/devcontainer.json` | Dev Container settings |
 

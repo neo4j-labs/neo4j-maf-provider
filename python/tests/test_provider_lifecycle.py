@@ -126,8 +126,11 @@ class TestAsyncContextManager:
                 await provider.__aenter__()
 
     @pytest.mark.asyncio
-    async def test_aenter_requires_connection_config(self) -> None:
+    async def test_aenter_requires_connection_config(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """__aenter__ should raise if connection config is missing."""
+        monkeypatch.delenv("NEO4J_URI", raising=False)
+        monkeypatch.delenv("NEO4J_USERNAME", raising=False)
+        monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
         provider = Neo4jContextProvider(
             index_name="test_index",
             index_type="fulltext",

@@ -1,25 +1,45 @@
-name: Release
+name: Release PyPI
 
 on:
   push:
     tags:
-      - "v*"
+      - "python-v*"
 
 permissions:
   contents: write
   id-token: write
 
 jobs:
-  build:
+  build-python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
-      - name: Set up Python
-        run: uv python install 3.12
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#python-v}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate package version matches tag
+        working-directory: python/packages/agent-framework-neo4j
+        run: |
+          PACKAGE_VERSION=$(python - <<'PY'
+          import tomllib
+          with open("pyproject.toml", "rb") as f:
+              print(tomllib.load(f)["project"]["version"])
+          PY
+          )
+          if [ "$PACKAGE_VERSION" != "${{ steps.version.outputs.VERSION }}" ]; then
+            echo "Tag version ${{ steps.version.outputs.VERSION }} does not match package version $PACKAGE_VERSION"
+            exit 1
+          fi
 
       - name: Build package
         working-directory: python/packages/agent-framework-neo4j
@@ -29,10 +49,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: python-package-distributions
-          path: python/dist/
+          path: python/packages/agent-framework-neo4j/dist/
 
   publish-pypi:
-    needs: build
+    needs: build-python
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -53,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download distributions
+      - name: Download Python distributions
         uses: actions/download-artifact@v4
         with:
           name: python-package-distributions

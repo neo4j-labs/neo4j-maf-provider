@@ -55,7 +55,7 @@ class Neo4jSettings(BaseSettings):
         description="Name of the Neo4j vector index to query",
     )
     fulltext_index_name: str = Field(
-        default="chunkFulltext",
+        default="search_chunks",
         description="Name of the Neo4j fulltext index to query",
     )
 

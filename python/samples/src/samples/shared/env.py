@@ -29,10 +29,16 @@ def get_env_file_path() -> str | None:
     src_dir = os.path.dirname(samples_pkg_dir)       # samples/src
     project_root = os.path.dirname(src_dir)          # samples/
 
-    # Check for .env in project root
+    # Check for .env in project root (python/samples/)
     root_env = os.path.join(project_root, '.env')
     if os.path.exists(root_env):
         return root_env
+
+    # Check for .env in repo root (shared across Python and .NET)
+    repo_root = os.path.dirname(os.path.dirname(project_root))  # up from python/samples/
+    repo_env = os.path.join(repo_root, '.env')
+    if os.path.exists(repo_env):
+        return repo_env
 
     # Fallback: Try to get path from .azure/{environment}/.env (azd managed)
     try:

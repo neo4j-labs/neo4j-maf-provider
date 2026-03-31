@@ -1,8 +1,5 @@
 <Project>
-  <!--
-    Central MSBuild properties for .NET projects
-    This is a placeholder for the future .NET implementation
-  -->
+  <!-- Central MSBuild properties for .NET projects -->
 
   <PropertyGroup>
     <!-- Target frameworks -->

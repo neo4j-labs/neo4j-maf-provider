@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Neo4j.AgentFramework.GraphRAG</PackageId>
+    <Description>Neo4j Context Provider for Microsoft Agent Framework. Retrieves knowledge graph context using vector, fulltext, or hybrid search with optional graph enrichment.</Description>
+    <PackageTags>neo4j;agent-framework;rag;context-provider;knowledge-graph;vector-search</PackageTags>
+    <!-- Microsoft.Agents.AI.Abstractions is still prerelease (rc2); suppress until it goes stable -->
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Agents.AI.Abstractions" />
+    <PackageReference Include="Neo4j.Driver" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neo4j.AgentFramework.GraphRAG.Tests" />
+  </ItemGroup>
+
+</Project>

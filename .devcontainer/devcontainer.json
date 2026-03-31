@@ -1,0 +1,51 @@
+{
+    "name": "neo4j-maf-provider",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+    "forwardPorts": [8000],
+    "features": {
+        "ghcr.io/devcontainers/features/azure-cli:1": {
+            "installBicep": true
+        },
+        "ghcr.io/azure/azure-dev/azd:latest": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/dotnet:2": {
+            "version": "latest"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.azure-dev",
+                "ms-azuretools.vscode-bicep",
+                "ms-python.python",
+                "ms-dotnettools.csdevkit",
+                "github.copilot"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.terminal.activateEnvironment": true
+            }
+        },
+        "codespaces": {
+            "openFiles": [
+                "README.md"
+            ]
+        }
+    },
+    "postCreateCommand": "pip install uv && cd python && uv sync --prerelease=allow",
+    "remoteUser": "vscode",
+    "hostRequirements": {
+        "memory": "8gb"
+    },
+    "secrets": {
+        "NEO4J_URI": {
+            "description": "Neo4j connection URI (e.g., neo4j+s://xxx.databases.neo4j.io)"
+        },
+        "NEO4J_USERNAME": {
+            "description": "Neo4j username"
+        },
+        "NEO4J_PASSWORD": {
+            "description": "Neo4j password"
+        }
+    }
+}

@@ -13,7 +13,7 @@ from neo4j_graphrag.embeddings import Embedder
 from neo4j_graphrag.utils.rate_limit import RateLimitHandler
 
 if TYPE_CHECKING:
-    from azure.ai.inference import EmbeddingsClient  # type: ignore[import-untyped]
+    from azure.ai.inference import EmbeddingsClient
     from azure.core.credentials import TokenCredential
 
 
@@ -85,7 +85,7 @@ class AzureAIEmbedder(Embedder):
         Returns:
             Vector embedding as list of floats.
         """
-        from azure.ai.inference.models import EmbeddingInputType  # type: ignore[import-untyped]
+        from azure.ai.inference.models import EmbeddingInputType
 
         response = self._client.embed(
             input=[text],

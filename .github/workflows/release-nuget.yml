@@ -1,0 +1,82 @@
+name: Release NuGet
+
+on:
+  push:
+    tags:
+      - "dotnet-v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#dotnet-v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        working-directory: dotnet
+        run: dotnet build --configuration Release -p:Version=${{ steps.version.outputs.VERSION }}
+
+      - name: Test
+        working-directory: dotnet
+        run: dotnet test --configuration Release --no-build
+
+      - name: Pack
+        working-directory: dotnet
+        run: dotnet pack src/Neo4j.AgentFramework.GraphRAG --configuration Release --no-build -p:Version=${{ steps.version.outputs.VERSION }} -o nupkg/
+
+      - name: Store NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: dotnet/nupkg/
+
+  publish-nuget:
+    needs: build-dotnet
+    runs-on: ubuntu-latest
+    environment:
+      name: nuget
+      url: https://www.nuget.org/packages/Neo4j.AgentFramework.GraphRAG
+    steps:
+      - name: Download NuGet package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: nupkg/
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish to NuGet
+        run: dotnet nuget push nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  github-release:
+    needs: publish-nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download NuGet package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: dist/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

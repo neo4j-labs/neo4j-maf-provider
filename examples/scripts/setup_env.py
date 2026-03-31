@@ -50,8 +50,12 @@ PLACEHOLDER_SECTIONS = {
     },
 }
 
-ENV_FILE = Path('.env')
-SAMPLE_FILE = Path('.env.sample')
+# Resolve repo root (two levels up from examples/scripts/)
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPT_DIR.parent.parent
+
+ENV_FILE = _REPO_ROOT / '.env'
+SAMPLE_FILE = _REPO_ROOT / '.env.sample'
 
 
 def parse_env_file(filepath: Path) -> dict[str, str]:

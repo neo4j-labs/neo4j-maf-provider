@@ -7,7 +7,7 @@ Sample applications demonstrating the `agent-framework-neo4j` library with Micro
 These samples use **Azure AI Foundry serverless models** to power the AI agents. The infrastructure is minimal:
 
 - **AI Project** - A Microsoft Foundry project for managing model endpoints
-- **Serverless Models** - Pay-as-you-go model deployments (GPT-4o, text-embedding-ada-002)
+- **Serverless Models** - Pay-as-you-go model deployments (GPT-4o, text-embedding-3-small)
 
 When you run a sample, the agent:
 1. Receives your question
@@ -25,57 +25,81 @@ When you run a sample, the agent:
 ## Quick Start
 
 ```bash
-# 1. Install dependencies (from repo root)
+# 1. Install dependencies (from python/ directory)
+cd python
 uv sync --prerelease=allow
 
-# 2. Configure Azure region (from samples directory)
-cd samples
-./scripts/setup_azure.sh
-
-# 3. Deploy Azure infrastructure (includes model deployments)
+# 2. Deploy Azure infrastructure (from repo root)
+cd ..
+az login
+azd auth login
 azd up
 
-# 4. Sync Azure environment variables
-uv run setup_env.py
+# 3. Create .env and add Neo4j credentials
+cp .env.sample .env
 
-# 5. Add Neo4j credentials to .env
+NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-password
+
+# 4. Sync Azure environment variables
+python examples/scripts/setup_env.py
+
+# 5. Sign in for Azure SDK access used by the samples
+az login
 
 # 6. Run samples
+cd python
 uv run start-samples
 ```
 
 ## 1. Deploy Azure Infrastructure
 
-First, configure your Azure region:
+See [examples/SETUP.md](../../examples/SETUP.md) for full setup instructions covering Azure OpenAI, Neo4j, and demo data loading.
+
+From the **repo root**, deploy the sample provisioning resources:
 
 ```bash
-cd samples
-./scripts/setup_azure.sh
-```
-
-Then deploy the infrastructure:
-
-```bash
+az login
+azd auth login
 azd up
 ```
+
+Azure AI Foundry currently requires one of these regions:
+- `eastus2` (East US 2)
+- `swedencentral` (Sweden Central)
+- `westus2` (West US 2)
+- `westus3` (West US 3)
+
+If you choose another region, check Azure AI Foundry availability there before provisioning.
 
 This provisions:
 - Azure AI Services account
 - Azure AI Project
-- Model deployments (GPT-4o, text-embedding-ada-002)
+- Model deployments (GPT-4o, text-embedding-3-small)
 - Required IAM role assignments
 
-After provisioning, sync the Azure endpoints to your `.env` file:
+After provisioning, create `.env` if needed, add your Neo4j credentials, and then sync the Azure endpoints:
 
 ```bash
-uv run setup_env.py
+cp .env.sample .env
+```
+
+```env
+NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-password
+```
+
+```bash
+python examples/scripts/setup_env.py
 ```
 
 This populates your `.env` with:
 ```
 AZURE_AI_PROJECT_ENDPOINT=https://...
 AZURE_AI_MODEL_NAME=gpt-4o
-AZURE_AI_EMBEDDING_NAME=text-embedding-ada-002
+AZURE_AI_EMBEDDING_NAME=text-embedding-3-small
 ```
 
 ## 2. Configure Neo4j
@@ -84,7 +108,7 @@ Add your Neo4j database credentials to `.env`:
 
 ### Financial Documents Database (samples 1-4)
 
-See [SETUP.md](SETUP.md) for instructions on setting up the Neo4j database with financial data.
+See [examples/SETUP.md](../../examples/SETUP.md) for instructions on setting up Azure OpenAI, Neo4j, and loading demo data.
 
 ### Aircraft Database (samples 5-7)
 
@@ -95,12 +119,14 @@ For aircraft database access, please contact the author.
 ### Interactive Menu
 
 ```bash
+az login
 uv run start-samples
 ```
 
 ### Run Specific Sample
 
 ```bash
+az login
 uv run start-samples 1   # Semantic Search
 uv run start-samples 2   # Context Provider (Fulltext)
 uv run start-samples 3   # Context Provider (Vector)
@@ -263,11 +289,6 @@ Component -[:HAS_EVENT]-> MaintenanceEvent
 
 ```
 samples/
-├── azure.yaml              # Azure Developer CLI configuration
-├── setup_env.py            # Sync Azure env vars to .env
-├── infra/                  # Azure Bicep templates
-│   └── main.bicep          # AI Services, Project, and model deployments
-├── scripts/                # Setup helper scripts
 ├── src/samples/
 │   ├── basic_fulltext/     # Fulltext search samples
 │   ├── vector_search/      # Vector similarity samples
@@ -276,11 +297,13 @@ samples/
 │   └── shared/             # Shared utilities (agent config, CLI, logging)
 ```
 
+Sample provisioning files (Bicep templates, setup scripts) are shared with the .NET samples and live at the repo root under `examples/`. See [examples/SETUP.md](../../examples/SETUP.md).
+
 ## Troubleshooting
 
 ### "Model deployment not found"
 
-Run `azd up` to deploy the infrastructure including model deployments, then run `uv run setup_env.py` to sync the model names to your `.env` file.
+Run `azd up` from the **repo root** to deploy the sample resources, then run `python examples/scripts/setup_env.py` to sync model names to your `.env` file.
 
 ### "Neo4j not configured"
 
@@ -290,11 +313,11 @@ Add the required Neo4j environment variables to `.env`. The samples check for:
 
 ### "Azure not configured"
 
-Run `azd up` followed by `uv run setup_env.py` to populate Azure variables.
+Run `azd up` from the **repo root** followed by `python examples/scripts/setup_env.py` to populate Azure variables.
 
 ### "Index not found"
 
-Create the required indexes in your Neo4j database. See `SETUP.md` for details.
+Create the required indexes in your Neo4j database. See [examples/SETUP.md](../../examples/SETUP.md) for details.
 
 ## Cost Estimate
 

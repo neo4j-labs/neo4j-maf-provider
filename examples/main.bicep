@@ -27,9 +27,9 @@ param chatDeploymentCapacity int = 20
 
 // Embedding model
 @description('Name of the embedding model to deploy')
-param embeddingModelName string = 'text-embedding-ada-002'
+param embeddingModelName string = 'text-embedding-3-small'
 @description('Version of the embedding model to deploy')
-param embeddingModelVersion string = '2'
+param embeddingModelVersion string = '1'
 @description('SKU for the embedding deployment')
 param embeddingDeploymentSku string = 'GlobalStandard'
 @description('Capacity for the embedding deployment')
@@ -89,6 +89,8 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
 resource chatDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
   parent: aiServices
   name: chatModelName
+  // The preview Foundry RP rejects concurrent child updates on the same account.
+  dependsOn: [aiProject]
   properties: {
     model: {
       format: 'OpenAI'
@@ -102,7 +104,7 @@ resource chatDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-1
   }
 }
 
-// Embedding model deployment (text-embedding-ada-002)
+// Embedding model deployment (text-embedding-3-small)
 resource embeddingDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
   parent: aiServices
   name: embeddingModelName
@@ -124,6 +126,12 @@ resource embeddingDeployment 'Microsoft.CognitiveServices/accounts/deployments@2
 resource storageConnection 'Microsoft.CognitiveServices/accounts/connections@2025-04-01-preview' = {
   name: 'storage-connection'
   parent: aiServices
+  dependsOn: [
+    aiProject
+    chatDeployment
+    embeddingDeployment
+    aiStorageRole
+  ]
   properties: {
     category: 'AzureStorageAccount'
     target: storageAccount.properties.primaryEndpoints.blob

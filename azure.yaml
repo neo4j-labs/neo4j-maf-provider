@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: neo4j-samples
+name: neo4j-maf-provider
 metadata:
-  template: neo4j-samples@0.0.1
+  template: neo4j-maf-provider@0.0.1
 
 # Minimal serverless infrastructure - just AI Services + Project
 infra:
   provider: bicep
-  path: infra
+  path: examples
   module: main
 
 hooks:
@@ -42,11 +42,10 @@ hooks:
       echo "=========================================="
       echo ""
       echo "Next steps:"
-      echo "  1. Run: uv run setup_env.py"
-      echo "  2. Go to https://ai.azure.com and deploy serverless models:"
-      echo "     - gpt-4o (chat)"
-      echo "     - text-embedding-ada-002 (embeddings)"
-      echo "  3. Update AZURE_AI_MODEL_NAME and AZURE_AI_EMBEDDING_NAME in .env"
-      echo "  4. Add Neo4j credentials to .env"
-      echo "  5. Run: uv run start-samples"
+      echo "  1. Create .env from .env.sample if needed"
+      echo "  2. Add Neo4j credentials to .env"
+      echo "  3. Run: python examples/scripts/setup_env.py"
+      echo "  4. Run samples:"
+      echo "     Python: cd python && uv run start-samples"
+      echo "     .NET:   cd dotnet && dotnet run --project samples/Neo4j.Samples"
       echo ""

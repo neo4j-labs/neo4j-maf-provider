@@ -37,7 +37,7 @@ class TestSettings:
         # Don't test uri/username/password as they may come from env
         settings = Neo4jSettings()
         assert settings.vector_index_name == "chunkEmbeddings"
-        assert settings.fulltext_index_name == "chunkFulltext"
+        assert settings.fulltext_index_name == "search_chunks"
 
 
 class TestProviderInit:

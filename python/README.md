@@ -66,20 +66,33 @@ async with provider:
 # Install dependencies
 uv sync --prerelease=allow
 
-# Provision Azure infrastructure (from samples directory)
-cd samples
+# Provision Azure infrastructure (from repo root)
+cd ..
+az login
+azd auth login
 azd up
-uv run setup_env.py
 
-# Configure Neo4j in samples/.env
+# Create .env and add Neo4j settings
+cp .env.sample .env
+
 NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
+
+# Sync Azure values into .env
+python examples/scripts/setup_env.py
+
+# Return to python workspace
+cd python
 ```
+
+Azure AI Foundry is only available in supported regions. Check the selected region before provisioning.
 
 ### Run Samples
 
 ```bash
+az login
+cd samples
 uv run start-samples      # Interactive menu
 uv run start-samples 3    # Run specific demo
 ```
