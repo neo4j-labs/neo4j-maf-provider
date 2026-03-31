@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <!-- Microsoft Agent Framework -->
-    <PackageVersion Include="Microsoft.Agents.AI.Abstractions" Version="1.0.0-rc2" />
-    <PackageVersion Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-rc2" />
+    <PackageVersion Include="Microsoft.Agents.AI.Abstractions" Version="1.0.0-rc4" />
+    <PackageVersion Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-rc4" />
 
     <!-- Neo4j -->
     <PackageVersion Include="Neo4j.Driver" Version="5.28.0" />
