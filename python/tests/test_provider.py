@@ -43,6 +43,17 @@ class TestSettings:
 class TestProviderInit:
     """Test Neo4jContextProvider initialization."""
 
+    def test_is_agent_framework_context_provider(self) -> None:
+        """Provider should inherit from the available Agent Framework context provider base."""
+        import agent_framework
+
+        context_provider = getattr(
+            agent_framework,
+            "ContextProvider",
+            getattr(agent_framework, "BaseContextProvider"),
+        )
+        assert issubclass(Neo4jContextProvider, context_provider)
+
     def test_requires_index_name(self) -> None:
         """Provider should require index_name."""
         with pytest.raises(ValueError, match="index_name"):

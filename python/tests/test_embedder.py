@@ -39,6 +39,24 @@ class TestAzureAIEmbedderInit:
         mock_client_cls.assert_called_once_with(
             endpoint="https://myhost.models.ai.azure.com",
             credential=credential,
+            credential_scopes=["https://ai.azure.com/.default"],
+        )
+
+    @patch("azure.ai.inference.EmbeddingsClient")
+    def test_accepts_custom_credential_scopes(self, mock_client_cls: MagicMock) -> None:
+        """Constructor should allow custom credential scopes."""
+        credential = MagicMock()
+
+        AzureAIEmbedder(
+            endpoint="https://myhost.models.ai.azure.com",
+            credential=credential,
+            model="text-embedding-ada-002",
+            credential_scopes=["https://cognitiveservices.azure.com/.default"],
+        )
+
+        mock_client_cls.assert_called_once_with(
+            endpoint="https://myhost.models.ai.azure.com",
+            credential=credential,
             credential_scopes=["https://cognitiveservices.azure.com/.default"],
         )
 

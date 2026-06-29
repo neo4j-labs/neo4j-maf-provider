@@ -7,6 +7,7 @@ compatible with neo4j-graphrag's Embedder interface.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from neo4j_graphrag.embeddings import Embedder
@@ -44,6 +45,8 @@ class AzureAIEmbedder(Embedder):
         model: Embedding model deployment name.
         rate_limit_handler: Optional handler for rate limiting. Defaults to retry
             with exponential backoff (neo4j-graphrag default).
+        credential_scopes: Optional credential scopes for token authentication.
+            Defaults to the current Microsoft Foundry scope.
     """
 
     def __init__(
@@ -52,6 +55,7 @@ class AzureAIEmbedder(Embedder):
         credential: TokenCredential,
         model: str = "text-embedding-ada-002",
         rate_limit_handler: RateLimitHandler | None = None,
+        credential_scopes: Sequence[str] | None = None,
     ) -> None:
         """
         Initialize the Azure AI embedder.
@@ -61,6 +65,8 @@ class AzureAIEmbedder(Embedder):
             credential: Azure credential for authentication (e.g., DefaultAzureCredential).
             model: Embedding model deployment name.
             rate_limit_handler: Optional handler for rate limiting.
+            credential_scopes: Optional credential scopes for token authentication.
+                Defaults to ["https://ai.azure.com/.default"].
         """
         from azure.ai.inference import EmbeddingsClient
 
@@ -70,7 +76,7 @@ class AzureAIEmbedder(Embedder):
         self._client: EmbeddingsClient = EmbeddingsClient(
             endpoint=endpoint,
             credential=credential,
-            credential_scopes=["https://cognitiveservices.azure.com/.default"],
+            credential_scopes=list(credential_scopes or ["https://ai.azure.com/.default"]),
         )
 
     def embed_query(self, text: str) -> list[float]:
