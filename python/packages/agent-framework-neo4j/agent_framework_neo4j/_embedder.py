@@ -18,6 +18,14 @@ if TYPE_CHECKING:
     from azure.core.credentials import TokenCredential
 
 
+def _normalize_credential_scopes(credential_scopes: Sequence[str] | None) -> list[str]:
+    if credential_scopes is None:
+        return ["https://ai.azure.com/.default"]
+    if isinstance(credential_scopes, str):
+        return [credential_scopes]
+    return list(credential_scopes)
+
+
 class AzureAIEmbedder(Embedder):
     """
     Embedder using Azure AI Inference SDK with Azure credential authentication.
@@ -76,7 +84,7 @@ class AzureAIEmbedder(Embedder):
         self._client: EmbeddingsClient = EmbeddingsClient(
             endpoint=endpoint,
             credential=credential,
-            credential_scopes=list(credential_scopes or ["https://ai.azure.com/.default"]),
+            credential_scopes=_normalize_credential_scopes(credential_scopes),
         )
 
     def embed_query(self, text: str) -> list[float]:
