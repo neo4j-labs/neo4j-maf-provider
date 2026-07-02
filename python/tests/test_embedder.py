@@ -39,11 +39,47 @@ class TestAzureAIEmbedderInit:
         mock_client_cls.assert_called_once_with(
             endpoint="https://myhost.models.ai.azure.com",
             credential=credential,
+            credential_scopes=["https://ai.azure.com/.default"],
+        )
+
+    @patch("azure.ai.inference.EmbeddingsClient")
+    def test_accepts_custom_credential_scopes(self, mock_client_cls: MagicMock) -> None:
+        """Constructor should allow custom credential scopes."""
+        credential = MagicMock()
+
+        AzureAIEmbedder(
+            endpoint="https://myhost.models.ai.azure.com",
+            credential=credential,
+            model="text-embedding-ada-002",
+            credential_scopes=["https://cognitiveservices.azure.com/.default"],
+        )
+
+        mock_client_cls.assert_called_once_with(
+            endpoint="https://myhost.models.ai.azure.com",
+            credential=credential,
             credential_scopes=["https://cognitiveservices.azure.com/.default"],
         )
 
     @patch("azure.ai.inference.EmbeddingsClient")
-    def test_default_model(self, mock_client_cls: MagicMock) -> None:
+    def test_accepts_single_credential_scope_string(self, mock_client_cls: MagicMock) -> None:
+        """Constructor should not split a single credential scope string into characters."""
+        credential = MagicMock()
+
+        AzureAIEmbedder(
+            endpoint="https://myhost.models.ai.azure.com",
+            credential=credential,
+            model="text-embedding-ada-002",
+            credential_scopes="https://cognitiveservices.azure.com/.default",
+        )
+
+        mock_client_cls.assert_called_once_with(
+            endpoint="https://myhost.models.ai.azure.com",
+            credential=credential,
+            credential_scopes=["https://cognitiveservices.azure.com/.default"],
+        )
+
+    @patch("azure.ai.inference.EmbeddingsClient")
+    def test_default_model(self, _mock_client_cls: MagicMock) -> None:
         """Default model should be text-embedding-ada-002."""
         embedder = AzureAIEmbedder(
             endpoint="https://myhost.models.ai.azure.com",
@@ -52,7 +88,7 @@ class TestAzureAIEmbedderInit:
         assert embedder._model == "text-embedding-ada-002"
 
     @patch("azure.ai.inference.EmbeddingsClient")
-    def test_custom_model(self, mock_client_cls: MagicMock) -> None:
+    def test_custom_model(self, _mock_client_cls: MagicMock) -> None:
         """Should accept custom model name."""
         embedder = AzureAIEmbedder(
             endpoint="https://myhost.models.ai.azure.com",
@@ -122,7 +158,7 @@ class TestClose:
     """Test the close method."""
 
     @patch("azure.ai.inference.EmbeddingsClient")
-    def test_closes_credential_if_supported(self, mock_client_cls: MagicMock) -> None:
+    def test_closes_credential_if_supported(self, _mock_client_cls: MagicMock) -> None:
         """close() should call credential.close() when available."""
         credential = MagicMock()
 
@@ -135,7 +171,7 @@ class TestClose:
         credential.close.assert_called_once()
 
     @patch("azure.ai.inference.EmbeddingsClient")
-    def test_no_error_if_credential_not_closeable(self, mock_client_cls: MagicMock) -> None:
+    def test_no_error_if_credential_not_closeable(self, _mock_client_cls: MagicMock) -> None:
         """close() should not fail if credential has no close method."""
         credential = MagicMock(spec=[])  # spec=[] means no attributes
 
