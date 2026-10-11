@@ -14,13 +14,18 @@ from typing import TYPE_CHECKING, Any
 import neo4j
 from agent_framework import (
     AgentSession,
-    BaseContextProvider,
     Message,
     SessionContext,
 )
 
 if TYPE_CHECKING:
+    from agent_framework import BaseContextProvider as AgentFrameworkContextProvider
     from agent_framework import SupportsAgentRun
+else:
+    try:
+        from agent_framework import ContextProvider as AgentFrameworkContextProvider
+    except ImportError:  # pragma: no cover - compatibility with older Agent Framework builds
+        from agent_framework import BaseContextProvider as AgentFrameworkContextProvider
 from neo4j_graphrag.embeddings import Embedder
 from neo4j_graphrag.retrievers import (
     HybridCypherRetriever,
@@ -67,7 +72,15 @@ def _format_cypher_result(record: neo4j.Record) -> RetrieverResultItem:
     return RetrieverResultItem(content=str(content), metadata=data if data else None)
 
 
-class Neo4jContextProvider(BaseContextProvider):
+def _message_from_text(*, role: str, text: str) -> Message:
+    """Create a message across Agent Framework message API versions."""
+    try:
+        return Message(role=role, contents=[text])
+    except TypeError:
+        return Message(role=role, text=text)
+
+
+class Neo4jContextProvider(AgentFrameworkContextProvider):
     """
     Context provider that retrieves knowledge graph context from Neo4j.
 
@@ -380,11 +393,11 @@ class Neo4jContextProvider(BaseContextProvider):
         if not result.items:
             return
 
-        context_messages: list[Message] = [Message(role="user", text=self._context_prompt)]
+        context_messages: list[Message] = [_message_from_text(role="user", text=self._context_prompt)]
         formatted_results = self._format_retriever_result(result)
         for text in formatted_results:
             if text:
-                context_messages.append(Message(role="user", text=text))
+                context_messages.append(_message_from_text(role="user", text=text))
 
         if context_messages:
             context.extend_messages(self.source_id, context_messages)

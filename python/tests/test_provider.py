@@ -11,6 +11,7 @@ from agent_framework import AgentSession, Message, SessionContext
 from neo4j_graphrag.types import RetrieverResult, RetrieverResultItem
 
 from agent_framework_neo4j import Neo4jContextProvider, Neo4jSettings
+from agent_framework_neo4j._provider import _message_from_text
 
 
 class TestSettings:
@@ -42,6 +43,29 @@ class TestSettings:
 
 class TestProviderInit:
     """Test Neo4jContextProvider initialization."""
+
+    def test_is_agent_framework_context_provider(self) -> None:
+        """Provider should inherit from the available Agent Framework context provider base."""
+        import agent_framework
+
+        try:
+            context_provider = agent_framework.ContextProvider
+        except AttributeError:
+            context_provider = agent_framework.BaseContextProvider
+        assert issubclass(Neo4jContextProvider, context_provider)
+
+    def test_message_from_text_falls_back_to_legacy_constructor(self) -> None:
+        """Message creation should work with Agent Framework versions that only accept text."""
+        def legacy_message(*args: object, **kwargs: object) -> Message:
+            if "contents" in kwargs:
+                raise TypeError("contents is not supported")
+            return Message(*args, **kwargs)
+
+        with patch("agent_framework_neo4j._provider.Message", side_effect=legacy_message):
+            message = _message_from_text(role="user", text="legacy text")
+
+        assert message.role == "user"
+        assert message.text == "legacy text"
 
     def test_requires_index_name(self) -> None:
         """Provider should require index_name."""
