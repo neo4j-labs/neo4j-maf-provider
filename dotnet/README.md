@@ -92,7 +92,7 @@ var provider = new Neo4jContextProvider(driver, new Neo4jContextProviderOptions
 
 ### Hybrid Search
 
-Combines vector and fulltext search, taking the best score per result.
+Combines vector and fulltext search. Each search's scores are first divided by its own highest score, because vector scores lie between 0 and 1 while fulltext scores are unbounded; then the best score per result is kept, as in neo4j-graphrag's hybrid search.
 
 ```csharp
 var provider = new Neo4jContextProvider(driver, new Neo4jContextProviderOptions
